@@ -24,8 +24,3 @@ Application Process:
 Make an account on edX.
 Register for the course.
 Start learning.
-
-Application Process:
-Make an account on edX.
-Register for the course.
-Start learning.

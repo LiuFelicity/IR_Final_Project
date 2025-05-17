@@ -26,6 +26,7 @@ for filename in os.listdir(input_folder):
         if not text: continue
         if "Increase your chances of acceptance for the program by using our" in text: continue
         if "Join Our OC Community" in text: continue
+        if text in content_texts: continue
         if "disclaimer" in text.lower(): break
         content_texts.append(text)
 

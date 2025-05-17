@@ -35,15 +35,3 @@ Create a password and select your country.
 Click create an account.
 Choose your desired course from the list of UC Berkeley courses available and click enroll.
 Once you’re enrolled for any course, you can start the course right away!
-
-Application Process:
-Want to know how to apply for the UC Berkeley Free Courses?
-The application procedure is online. Applicants have to make an online account following the steps below:
-Enter your email address.
-Enter your name; remember this name will be used for your certificate.
-Create a public username.
-The username cannot be changed.
-Create a password and select your country.
-Click create an account.
-Choose your desired course from the list of UC Berkeley courses available and click enroll.
-Once you’re enrolled for any course, you can start the course right away!

@@ -29,11 +29,3 @@ JOIN COURSE
 option.
 Register yourself on the platform and sign in.
 Enroll yourself and start learning.
-
-Application Process:
-Follow the link below to apply for the ethical hacking free online course.
-Click on the
-JOIN COURSE
-option.
-Register yourself on the platform and sign in.
-Enroll yourself and start learning.

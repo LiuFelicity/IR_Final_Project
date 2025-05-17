@@ -33,12 +33,3 @@ enroll now
 .
 All applicants will have to create an account on edX to apply for the Harvard Free Computer Science Course.
 There is no deadline to apply for the CS50 edX, however, apply before the CS50 Harvard Free course is archived.
-
-Application Process:
-Want to know how to learn programming? Apply for this free online course by clicking on the ‘’apply now’ button below and learn from top instructors.
-Before applying, make sure you meet all the requirements for these Harvard University courses.
-Check the session available and select
-enroll now
-.
-All applicants will have to create an account on edX to apply for the Harvard Free Computer Science Course.
-There is no deadline to apply for the CS50 edX, however, apply before the CS50 Harvard Free course is archived.
