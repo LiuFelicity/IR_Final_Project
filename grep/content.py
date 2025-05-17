@@ -21,15 +21,13 @@ for filename in os.listdir(input_folder):
     content_blocks = soup.select(".elementor-widget-text-editor")
 
     content_texts = []
-    stop = False
     for block in content_blocks:
         text = block.get_text(separator="\n", strip=True)
-        if "disclaimer" in text.lower():
-            stop = True
-        if stop:
-            break
-        if text:
-            content_texts.append(text)
+        if not text: continue
+        if "Increase your chances of acceptance for the program by using our" in text: continue
+        if "Join Our OC Community" in text: continue
+        if "disclaimer" in text.lower(): break
+        content_texts.append(text)
 
     full_text = f"Title: {title}\n\n" + "\n\n".join(content_texts)
 
