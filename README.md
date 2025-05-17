@@ -27,7 +27,7 @@ IR_Final_Project/
    ```
 
 2. **Step 1: Download listing pages**
-   - Run `page.py` to download paginated opportunity listings (pages 2–25) into `page_data/`.
+   - Run `page.py` to download paginated opportunity listings (pages 1–25) into `page_data/`.
    ```bash
    python page.py
    ```
