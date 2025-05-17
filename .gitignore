@@ -181,3 +181,5 @@ cython_debug/
 .cursorindexingignore
 
 .DS_Store
+grep/activity_data/
+grep/page_data/
