@@ -1,2 +1,8 @@
-packaging==24.2
-wheel @ file:///opt/homebrew/Cellar/python%403.13/3.13.2/libexec/wheel-0.45.1-py3-none-any.whl#sha256=b9235939e2096903717cb6bfc132267f8a7e46deb2ec3ef9c5e234ea301795d0
+beautifulsoup4==4.13.4
+certifi==2025.4.26
+charset-normalizer==3.4.2
+idna==3.10
+requests==2.32.3
+soupsieve==2.7
+typing_extensions==4.13.2
+urllib3==2.4.0
