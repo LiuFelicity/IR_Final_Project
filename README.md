@@ -13,7 +13,9 @@ IR_Final_Project/
     ├── activity_html.py       # Downloads each opportunity's detail page HTML
     ├── content.py             # Extracts and saves main text content from each detail HTML
     ├── build_lsi.py           # Builds term-document matrix and generates LSI document/term vectors
-    ├── find_similar_docs.py   # Finds similar documents based on LSI embeddings
+    ├── find_similar_docs.py   # Finds top 5 most relevant documents using LSI embeddings
+    ├── term_vectors_lsi.txt   # LSI term vectors (generated)
+    ├── doc_vectors_lsi.txt    # LSI document vectors (generated)
     ├── activity_data/         # Downloaded HTML files for each opportunity
     ├── activity_data_text/    # Extracted text content for each opportunity
     └── page_data/             # Downloaded HTML files for each listing page
