@@ -12,14 +12,14 @@ IR_Final_Project/
     ├── activity.py            # Extracts opportunity links from listing HTML files
     ├── activity_html.py       # Downloads each opportunity's detail page HTML
     ├── content.py             # Extracts and saves main text content from each detail HTML
+    ├── build_lsi.py           # Builds term-document matrix and generates LSI document/term vectors
+    ├── find_similar_docs.py   # Finds similar documents based on LSI embeddings
     ├── activity_data/         # Downloaded HTML files for each opportunity
     ├── activity_data_text/    # Extracted text content for each opportunity
     └── page_data/             # Downloaded HTML files for each listing page
 ```
 
 ## Usage
-
-> **Note:** All Python scripts should be executed from within the `grep` folder. Use `cd grep` before running the commands below.
 
 1. **Install dependencies**
    ```bash
@@ -49,6 +49,19 @@ IR_Final_Project/
    ```bash
    python content.py
    ```
+
+6. **Step 5: Generate LSI vectors**
+   - Run `build_lsi.py` to build the term-document matrix, apply Latent Semantic Indexing (LSI), and generate both term vectors (`term_vectors_lsi.txt`) and document vectors (`doc_vectors_lsi.txt`).
+   ```bash
+   python build_lsi.py
+   ```
+
+7. **Step 6: Find similar documents**
+   - To find the top 5 most relevant documents to a given file, use the interactive script:
+   ```bash
+   python find_similar_docs.py
+   ```
+   Enter a filename from `activity_data_text` (e.g. `commonwealth-distance-learning-scholarships.txt`) when prompted, and the script will output the five most similar documents based on LSI embeddings.
 
 ## Notes
 - All scripts are written in Python and use `requests` and `BeautifulSoup` for web scraping and parsing.
