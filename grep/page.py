@@ -1,10 +1,11 @@
 import requests
 from bs4 import BeautifulSoup
 import time
+import os
 
 base_url = "https://www.opportunitiescircle.com/explore-opportunities/?sf_paged="
 
-# 範圍：第 2 到第 25 頁
+# 範圍：第 1 到第 25 頁
 for page_num in range(1, 26):
     url = f"{base_url}{page_num}"
     try:
@@ -14,6 +15,7 @@ for page_num in range(1, 26):
 
         # 儲存 HTML
         filename = f"page_data/page_{page_num}.html"
+        os.makedirs(os.path.dirname(filename), exist_ok=True)
         with open(filename, "w", encoding="utf-8") as f:
             f.write(response.text)
 

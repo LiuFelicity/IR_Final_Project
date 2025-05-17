@@ -8,8 +8,8 @@ output_links = []
 # 確保 output 資料夾存在
 os.makedirs(output_folder, exist_ok=True)
 
-# 處理 page_2.html 到 page_25.html
-for page_num in range(2, 26):
+# 處理 page_1.html 到 page_25.html
+for page_num in range(1, 26):
     filename = f"{input_folder}/page_{page_num}.html"
     if not os.path.exists(filename):
         print(f"❌ 找不到檔案：{filename}")
@@ -25,6 +25,7 @@ for page_num in range(2, 26):
 
 # 去除重複連結
 output_links = list(set(output_links))
+output_links.sort() # for reproducibility
 
 # 儲存到 activity_data 資料夾下
 output_file = f"{output_folder}/opportunity_links.txt"
