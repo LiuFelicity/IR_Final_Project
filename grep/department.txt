@@ -1,0 +1,54 @@
+Department of Chinese Literature  
+Department of Foreign Languages and Literatures  
+Department of History  
+Department of Philosophy  
+Department of Anthropology  
+Department of Library and Information Science  
+Department of Japanese Language and Literature  
+Department of Drama and Theatre  
+Department of Mathematics  
+Department of Physics  
+Department of Chemistry  
+Department of Geosciences  
+Department of Psychology  
+Department of Geography  
+Department of Atmospheric Sciences  
+Department of Political Science  
+Department of Economics  
+Department of Sociology  
+Department of Social Work  
+Department of Medicine  
+Department of Dentistry  
+Department of Pharmacy  
+Department of Clinical Laboratory Sciences and Medical Biotechnology  
+Department of Nursing  
+Department of Physical Therapy  
+Department of Occupational Therapy  
+Department of Civil Engineering  
+Department of Mechanical Engineering  
+Department of Chemical Engineering  
+Department of Engineering Science and Ocean Engineering  
+Department of Materials Science and Engineering  
+Department of Agronomy  
+Department of Bioenvironmental Systems Engineering  
+Department of Agricultural Chemistry  
+Department of Forestry and Resource Conservation  
+Department of Animal Science and Technology  
+Department of Agricultural Economics  
+Department of Horticultural Science  
+Department of Veterinary Medicine  
+Department of Bio-Industry Communication and Development  
+Department of Bio-industrial Mechatronics Engineering  
+Department of Entomology  
+Department of Plant Pathology and Microbiology  
+Department of Business Administration  
+Department of Accounting  
+Department of Finance  
+Department of International Business  
+Department of Information Management  
+Department of Public Health  
+Department of Electrical Engineering  
+Department of Computer Science and Information Engineering  
+Department of Law  
+Department of Life Science  
+Department of Biochemical Science and Technology  
