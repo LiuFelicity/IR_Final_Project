@@ -72,3 +72,13 @@ IR_Final_Project/
 
 ## License
 This project is for educational and research purposes only.
+
+## Citation
+@inproceedings{lee2019melu,
+  title={MeLU: Meta-Learned User Preference Estimator for Cold-Start Recommendation},
+  author={Lee, Hoyeop and Im, Jinbae and Jang, Seongwon and Cho, Hyunsouk and Chung, Sehee},
+  booktitle={Proceedings of the 25th ACM SIGKDD International Conference on Knowledge Discovery \& Data Mining},
+  pages={1073--1082},
+  year={2019},
+  organization={ACM}
+}
