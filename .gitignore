@@ -187,3 +187,4 @@ activity_data_text/
 doc_vectors_lsi.txt
 term_vectors_lsi.txt
 users.json
+*.npz
