@@ -1,6 +1,7 @@
 import os
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.decomposition import TruncatedSVD
+import numpy as np
 
 # Directory containing the text files
 dir_path = os.path.join(os.path.dirname(__file__), 'activity_data_text')
@@ -29,19 +30,12 @@ X_lsi = svd.fit_transform(X)
 terms = vectorizer.get_feature_names_out()
 term_vectors = svd.components_.T  # shape: (n_terms, n_components)
 
-# Save to file
-with open(os.path.join(os.path.dirname(__file__), 'term_vectors_lsi.txt'), 'w', encoding='utf-8') as out:
-    for idx, term in enumerate(terms):
-        vec_str = ' '.join(f'{v:.6f}' for v in term_vectors[idx])
-        out.write(f'{term} {vec_str}\n')
+# Save terms and term vectors to a single .npz file
+term_data_path = os.path.join(os.path.dirname(__file__), 'term_data_lsi.npz')
+np.savez(term_data_path, terms=terms, vectors=term_vectors)
+print(f"LSI terms and vectors saved for {len(terms)} terms in '{os.path.basename(term_data_path)}'.")
 
-print(f"LSI term vectors saved for {len(terms)} terms in 'term_vectors_lsi.txt'.")
-
-# Save document vectors (LSI embeddings)
-doc_vectors_path = os.path.join(os.path.dirname(__file__), 'doc_vectors_lsi.txt')
-with open(doc_vectors_path, 'w', encoding='utf-8') as out:
-    for idx, vec in enumerate(X_lsi):
-        vec_str = ' '.join(f'{v:.6f}' for v in vec)
-        out.write(f'{file_names[idx]} {vec_str}\n')
-
-print(f"LSI document vectors saved for {len(file_names)} documents in 'doc_vectors_lsi.txt'.")
+# Save document file names and vectors to a single .npz file
+doc_data_path = os.path.join(os.path.dirname(__file__), 'doc_data_lsi.npz')
+np.savez(doc_data_path, file_names=np.array(file_names), vectors=X_lsi)
+print(f"LSI document file names and vectors saved for {len(file_names)} documents in '{os.path.basename(doc_data_path)}'.")
