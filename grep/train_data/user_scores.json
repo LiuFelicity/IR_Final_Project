@@ -1,0 +1,22 @@
+[
+    {
+        "user_id": 1,
+        "recommendations": {
+            "entrepreneurship-world-cup": 2,
+            "introduction-to-statistics-free-course": 3,
+            "mext-undergraduate-scholarship-in-japan": 1,
+            "tomorrows-leaders-graduate-program": 1,
+            "wipo-young-experts-program": 1,
+            "university-of-otago-phd-scholarships": 1,
+            "oecd-internship-in-france": 1,
+            "lester-b-pearson-scholarship-in-canada": 1,
+            "un-ohchr-fellowship-program": 1,
+            "ielts-academic-test-preparation-course": 3,
+            "wto-internship-programme-paid-internship-program": 1,
+            "google-cybersecurity-professional-certificate-courses": 2,
+            "openlearn-free-online-courses-with-free-certificate": 4,
+            "adbi-online-courses-with-certificates": 4,
+            "google-free-online-courses-with-certificate": 4
+        }
+    }
+]

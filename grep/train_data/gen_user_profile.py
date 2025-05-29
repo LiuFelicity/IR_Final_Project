@@ -88,7 +88,7 @@ for i in range(5000):
     user_countries = random.sample(countries, random.randint(1, 3))
 
     user_profiles.append({
-        'id': f'user_{i+1}',
+        'id': i+1,
         'department': dept,
         'age': age,
         'interests': user_interests,
@@ -96,5 +96,5 @@ for i in range(5000):
     })
 
 # 儲存成 JSON
-with open('pseudo_user_profiles.json', 'w', encoding='utf-8') as f:
+with open('train_data/pseudo_user_profiles.json', 'w', encoding='utf-8') as f:
     json.dump(user_profiles, f, ensure_ascii=False, indent=2)
