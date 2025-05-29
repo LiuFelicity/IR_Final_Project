@@ -25,23 +25,14 @@ class user_preference_estimator(torch.nn.Module):
         self.linear_out = torch.nn.Linear(self.fc2_out_dim, 1)
 
     def forward(self, x, training = True):
-        # [MODIFY]
-        # rate_idx = Variable(x[:, 0], requires_grad=False)
-        # genre_idx = Variable(x[:, 1:26], requires_grad=False)
-        # director_idx = Variable(x[:, 26:2212], requires_grad=False)
-        # actor_idx = Variable(x[:, 2212:10242], requires_grad=False)
-        # gender_idx = Variable(x[:, 10242], requires_grad=False)
-        # age_idx = Variable(x[:, 10243], requires_grad=False)
-        # occupation_idx = Variable(x[:, 10244], requires_grad=False)
-        # area_idx = Variable(x[:, 10245], requires_grad=False)
-        rate_idx = x[:, 0]
-        genre_idx = x[:, 1:26]
-        director_idx = x[:, 26:2212]
-        actor_idx = x[:, 2212:10242]
-        gender_idx = x[:, 10242]
-        age_idx = x[:, 10243]
-        occupation_idx = x[:, 10244]
-        area_idx = x[:, 10245]
+        rate_idx = Variable(x[:, 0], requires_grad=False)
+        genre_idx = Variable(x[:, 1:26], requires_grad=False)
+        director_idx = Variable(x[:, 26:2212], requires_grad=False)
+        actor_idx = Variable(x[:, 2212:10242], requires_grad=False)
+        gender_idx = Variable(x[:, 10242], requires_grad=False)
+        age_idx = Variable(x[:, 10243], requires_grad=False)
+        occupation_idx = Variable(x[:, 10244], requires_grad=False)
+        area_idx = Variable(x[:, 10245], requires_grad=False)
 
         item_emb = self.item_emb(rate_idx, genre_idx, director_idx, actor_idx)
         user_emb = self.user_emb(gender_idx, age_idx, occupation_idx, area_idx)

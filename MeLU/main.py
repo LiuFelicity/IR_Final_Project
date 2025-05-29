@@ -8,6 +8,7 @@ from model_training import training
 from data_generation import generate
 from evidence_candidate import selection
 
+torch.device("cpu")
 
 if __name__ == "__main__":
     master_path= "./ml"
