@@ -83,3 +83,16 @@ IR_Final_Project/
 ## License
 This project is for educational and research purposes only.
 
+@inproceedings{CLCRec,
+  title     = {Contrastive Learning for Cold-start Recommendation},
+  author    = {Wei, Yinwei and 
+               Wang, Xiang and 
+               Qi, Li and
+               Nie, Liqiang and 
+               Li, Yan and 
+               Li, Xuanqing and 
+               Chua, Tat-Seng},
+  booktitle = {Proceedings of the 29th ACM International Conference on Multimedia},
+  pages     = {--},
+  year      = {2021}
+}
