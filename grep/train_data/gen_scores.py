@@ -6,7 +6,7 @@ import random
 import google.generativeai as genai
 
 # 設定 Gemini API 金鑰
-genai.configure(api_key="")
+genai.configure(api_key=os.getenv('GEMINI_API_KEY'))
 model = genai.GenerativeModel('gemini-2.0-flash')
 
 # 載入用戶資料
