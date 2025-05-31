@@ -101,7 +101,7 @@ if __name__ == '__main__':
 
     print('Data has been loaded.')
     ##########################################################################################################################################
-    model = CLCRec(num_user, num_item, num_warm_item, train_data, reg_weight, dim_E, v_feat, a_feat, t_feat, temp_value, num_neg, lr_lambda, is_word, num_sample).cuda()
+    model = CLCRec(num_user, num_item, num_warm_item, train_data, reg_weight, dim_E, v_feat, a_feat, t_feat, temp_value, num_neg, lr_lambda, is_word, num_sample).to(device)
     
     ##########################################################################################################################################
     optimizer = torch.optim.Adam([{'params': model.parameters(), 'lr': learning_rate}])#, 'weight_decay': reg_weight}])

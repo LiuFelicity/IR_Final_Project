@@ -2,6 +2,8 @@ import torch
 import torch.nn as nn
 from tqdm import tqdm
 
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
 def train(epoch, length, dataloader, model, optimizer, batch_size, writer):    
     model.train()
     print('Now, training start ...')
@@ -17,7 +19,7 @@ def train(epoch, length, dataloader, model, optimizer, batch_size, writer):
 
     for user_tensor, item_tensor in dataloader:
         optimizer.zero_grad()
-        loss, model_loss, reg_loss = model.loss(user_tensor.cuda(), item_tensor.cuda())
+        loss, model_loss, reg_loss = model.loss(user_tensor.to(device), item_tensor.to(device))
         loss.backward(retain_graph=True)
         optimizer.step()
         sum_mat += model.mat.detach().cpu().item()
@@ -31,9 +33,5 @@ def train(epoch, length, dataloader, model, optimizer, batch_size, writer):
     pbar.close()
     print('----------------- loss value:{}  model_loss value:{} contrastive_loss value:{} reg_loss value:{} --------------'
         .format(sum_loss/step, sum_model_loss/step, sum_contrastive_loss/step, sum_reg_loss/step))
-    # if writer is not None:
-    #     writer.add_scalar('Loss/loss', sum_loss/step, epoch)
-    #     writer.add_scalar('Loss/model_loss', sum_model_loss/step, epoch)
-    #     writer.add_scalar('Loss/reg_loss', sum_reg_loss/step, epoch)
 
     return loss, sum_mat/step

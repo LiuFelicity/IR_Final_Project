@@ -97,18 +97,22 @@ class CLCRec(torch.nn.Module):
     def forward(self, user_tensor, item_tensor):
         pos_item_tensor = item_tensor[:, 0].unsqueeze(1)
         pos_item_tensor = pos_item_tensor.repeat(1, 1+self.num_neg).view(-1, 1).squeeze()
-        
+
         user_tensor = user_tensor.view(-1, 1).squeeze()
         item_tensor = item_tensor.view(-1, 1).squeeze()
 
+        # Ensure indices are within bounds
+        valid_indices = (item_tensor - self.num_user >= 0) & (item_tensor - self.num_user < self.num_item)
+        if not valid_indices.all():
+            raise IndexError(f"Invalid indices detected in item_tensor: {item_tensor[~valid_indices]}")
 
         feature = self.encoder()
-        all_item_feat = feature[item_tensor-self.num_user]
+        all_item_feat = feature[item_tensor - self.num_user]
 
         user_embedding = self.id_embedding[user_tensor]
         pos_item_embedding = self.id_embedding[pos_item_tensor]
         all_item_embedding = self.id_embedding[item_tensor]
-        
+
         head_feat = F.normalize(all_item_feat, dim=1)
         head_embed = F.normalize(pos_item_embedding, dim=1)
 

@@ -91,15 +91,24 @@ class TrainingDataset(Dataset):
         self.num_neg = num_neg
         self.user_item_dict = user_item_dict
         self.cold_set = set(np.load('./Data/'+dataset+'/cold_set.npy'))
-        self.all_set = set(range(num_user, num_user+num_item))-self.cold_set
+        self.all_set = set(range(num_user, num_user+num_item)) - self.cold_set
+
+        # Debugging: Log all_set and user_item_dict
+        # print(f"Debug: all_set size: {len(self.all_set)}, all_set sample: {list(self.all_set)[:10]}")
+        # print(f"Debug: user_item_dict sample: {list(user_item_dict.items())[:10]}")
 
     def __len__(self):
         return len(self.train_data)
 
     def __getitem__(self, index):
         user, pos_item = self.train_data[index]
-        neg_item = random.sample(self.all_set-set(self.user_item_dict[user]), self.num_neg)
-        user_tensor = torch.LongTensor([user]*(self.num_neg+1))
+        neg_item = random.sample(sorted(self.all_set - set(self.user_item_dict[user])), self.num_neg)
+        user_tensor = torch.LongTensor([user] * (self.num_neg + 1))
         item_tensor = torch.LongTensor([pos_item] + neg_item)
+
+        # Debugging: Log item_tensor values
+        # if (item_tensor < self.num_user).any() or (item_tensor >= self.num_user + self.num_item).any():
+        #     print(f"Debug: Invalid item_tensor values detected: {item_tensor}")
+
         return user_tensor, item_tensor
 
