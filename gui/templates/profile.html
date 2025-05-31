@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Profile</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body { padding-top: 50px; }
+        .container { max-width: 600px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center">Create Your Profile, {{ user_name }}!</h1>
+        <form method="post" action="{{ url_for('create_profile', user_name=user_name) }}" class="mt-4">
+            <div class="form-group">
+                <label for="age">Age:</label>
+                <select class="form-control" id="age" name="age" required>
+                    {% for age_opt in age_options %}
+                        <option value="{{ age_opt }}">{{ age_opt }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="department">Department:</label>
+                <select class="form-control" id="department" name="department" required>
+                    {% for dept_opt in department_options %}
+                        <option value="{{ dept_opt }}">{{ dept_opt }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="country">Country of Origin:</label>
+                <select class="form-control" id="country" name="country" required>
+                    {% for country_opt in country_options %}
+                        <option value="{{ country_opt }}">{{ country_opt }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Save Profile</button>
+        </form>
+    </div>
+</body>
+</html>

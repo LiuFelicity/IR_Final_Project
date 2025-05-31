@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Recommendations</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body { padding-top: 50px; }
+        .container { max-width: 800px; }
+        .activity { margin-bottom: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center">Recommendations for {{ user_name }}</h1>
+        {% if existing_user %}
+            <p class="text-center">Welcome back! Here are some new recommendations for you:</p>
+        {% else %}
+            <p class="text-center">Please rate the following 10 activities (1=Worst, 5=Best):</p>
+        {% endif %}
+
+        <form method="post" action="{{ url_for('recommendations', user_name=user_name) }}" class="mt-4">
+            {% for activity in activities %}
+            <div class="activity">
+                <h3>{{ activity.title }}</h3>
+                <p>{{ activity.content }}</p>
+                <p><a href="{{ activity.link }}" target="_blank">View Original Web Page</a></p>
+                <div class="form-group">
+                    <label for="rating_{{ activity.id }}">Your Rating (1-5):</label>
+                    <input type="number" class="form-control" id="rating_{{ activity.id }}" name="rating_{{ activity.id }}" min="1" max="5" required
+                           value="{{ user_ratings.get(activity.id, '') }}">
+                </div>
+            </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-success btn-block mt-3">Submit Ratings</button>
+        </form>
+        <div class="text-center mt-3">
+            <a href="{{ url_for('index') }}" class="btn btn-secondary">Go back to home</a>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Thank You</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body { padding-top: 50px; text-align: center; }
+        .container { max-width: 600px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Thank You, {{ user_name }}!</h1>
+        <p>Your ratings have been submitted.</p>
+        <a href="{{ url_for('index') }}" class="btn btn-primary mt-3">Rate more or start over</a>
+    </div>
+</body>
+</html>
