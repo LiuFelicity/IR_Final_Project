@@ -28,6 +28,8 @@ IR_Final_Project/
 
 1. **Install dependencies**
    ```bash
+   pip install torch==2.7.0
+   pip install torch_scatter==2.1.2 -f https://data.pyg.org/whl/torch-2.7.0+cu128.html
    pip install -r ../requirements.txt
    ```
 
