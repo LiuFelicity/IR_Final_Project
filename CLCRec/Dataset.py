@@ -8,8 +8,30 @@ import torch.nn as nn
 from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
 
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
 def data_load(dataset, has_v=True, has_a=True, has_t=True):
     dir_str = './Data/' + dataset
+
+    # Check for required files
+    required_files = [
+        'train.npy', 'val_full.npy', 'val_warm.npy', 'val_cold.npy',
+        'test_full.npy', 'test_warm.npy', 'test_cold.npy'
+    ]
+    if has_v:
+        required_files.append('feat_v.npy')
+    if has_a:
+        required_files.append('feat_a.npy')
+    if has_t:
+        required_files.append('feat_t.npy')
+
+    for file in required_files:
+        if not os.path.exists(os.path.join(dir_str, file)):
+            if file in ['feat_a.npy', 'feat_t.npy', 'feat_v.npy']:
+                print(f"Optional file '{file}' is missing in directory '{dir_str}', skipping.")
+                continue
+            raise FileNotFoundError(f"Required file '{file}' is missing in directory '{dir_str}'")
+
     train_data = np.load(dir_str+'/train.npy', allow_pickle=True)
     val_data = np.load(dir_str+'/val_full.npy', allow_pickle=True)
     val_warm_data = np.load(dir_str+'/val_warm.npy', allow_pickle=True)
@@ -17,50 +39,46 @@ def data_load(dataset, has_v=True, has_a=True, has_t=True):
     test_data = np.load(dir_str+'/test_full.npy', allow_pickle=True)
     test_warm_data = np.load(dir_str+'/test_warm.npy', allow_pickle=True)
     test_cold_data = np.load(dir_str+'/test_cold.npy', allow_pickle=True)
-    
+
+    v_feat = None
+    a_feat = None
+    t_feat = None
+
     if dataset == 'movielens':
         num_user = 55485
         num_item = 5986
         num_warm_item = 5119
-        v_feat = torch.tensor(np.load(dir_str+'/feat_v.npy', allow_pickle=True), dtype=torch.float).cuda()
-        a_feat = torch.tensor(np.load(dir_str+'/feat_a.npy', allow_pickle=True), dtype=torch.float).cuda()
-        t_feat = torch.tensor(np.load(dir_str+'/feat_t.npy', allow_pickle=True), dtype=torch.float).cuda()
-
+        if has_v and os.path.exists(os.path.join(dir_str, 'feat_v.npy')):
+            v_feat = torch.tensor(np.load(dir_str+'/feat_v.npy', allow_pickle=True), dtype=torch.float).to(device)
+        if has_a and os.path.exists(os.path.join(dir_str, 'feat_a.npy')):
+            a_feat = torch.tensor(np.load(dir_str+'/feat_a.npy', allow_pickle=True), dtype=torch.float).to(device)
+        if has_t and os.path.exists(os.path.join(dir_str, 'feat_t.npy')):
+            t_feat = torch.tensor(np.load(dir_str+'/feat_t.npy', allow_pickle=True), dtype=torch.float).to(device)
 
     elif dataset == 'amazon':
         num_user = 27044
         num_item = 86506
         num_warm_item = 68810
-        v_feat = torch.load(dir_str+'/feat_v.pt')
-        a_feat = None
-        t_feat = None
+        if has_v and os.path.exists(os.path.join(dir_str, 'feat_v.pt')):
+            v_feat = torch.load(dir_str+'/feat_v.pt').to(device)
 
     elif dataset == 'tiktok':
         num_user = 32309
         num_item = 57832+8624
         num_warm_item = 57832
-        if has_v:
-            v_feat = torch.load(dir_str+'/feat_v.pt')
-            v_feat = torch.tensor(v_feat, dtype=torch.float).cuda()
-        else:
-            v_feat = None
+        if has_v and os.path.exists(os.path.join(dir_str, 'feat_v.pt')):
+            v_feat = torch.load(dir_str+'/feat_v.pt').to(device)
+        if has_a and os.path.exists(os.path.join(dir_str, 'feat_a.pt')):
+            a_feat = torch.load(dir_str+'/feat_a.pt').to(device)
+        if has_t and os.path.exists(os.path.join(dir_str, 'feat_t.pt')):
+            t_feat = torch.load(dir_str+'/feat_t.pt').to(device)
 
-        if has_a:
-            a_feat = torch.load(dir_str+'/feat_a.pt')
-            a_feat = torch.tensor(a_feat, dtype=torch.float).cuda() 
-        else:
-            a_feat = None
-        
-        t_feat = torch.load(dir_str+'/feat_t.pt').cuda()
     elif dataset == 'kwai':
         num_user = 7010
         num_item = 86483
         num_warm_item = 74470
-
-        v_feat = np.load(dir_str+'/feat_v.npy')
-        v_feat = torch.tensor(v_feat, dtype=torch.float).cuda()
-        a_feat = t_feat = None
-
+        if has_v and os.path.exists(os.path.join(dir_str, 'feat_v.npy')):
+            v_feat = torch.tensor(np.load(dir_str+'/feat_v.npy', allow_pickle=True), dtype=torch.float).to(device)
 
     return num_user, num_item, num_warm_item, train_data, val_data, val_warm_data, val_cold_data, test_data, test_warm_data, test_cold_data, v_feat, a_feat, t_feat
 

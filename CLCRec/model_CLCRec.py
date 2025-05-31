@@ -7,6 +7,8 @@ import torch.nn.functional as F
 # from torch_geometric.utils import scatter_
 from torch_scatter import scatter
 
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
 ##########################################################################
 
 class CLCRec(torch.nn.Module):
@@ -57,11 +59,11 @@ class CLCRec(torch.nn.Module):
         self.bias = nn.Parameter(nn.init.kaiming_normal_(torch.rand((dim_E, 1))))
         self.att_sum_layer = nn.Linear(dim_E, dim_E)
 
-        self.result = nn.init.xavier_normal_(torch.rand((num_user+num_item, dim_E))).cuda()
+        self.result = nn.init.xavier_normal_(torch.rand((num_user+num_item, dim_E))).to(device)
 
 
     def encoder(self, mask=None):
-        feature = torch.tensor([]).cuda()
+        feature = torch.tensor([]).to(device)
         
         if self.v_feat is not None:
             feature = torch.cat((feature, self.v_feat), dim=1)
@@ -71,8 +73,7 @@ class CLCRec(torch.nn.Module):
         
         if self.t_feat is not None:
             if self.is_word:
-                t_feat = F.normalize(scatter(self.t_feat[self.word_tensor[1]], self.word_tensor[0], dim=0, reduce="mean")).cuda()
-                # t_feat = F.normalize(torch.tensor(scatter_('mean', self.t_feat[self.word_tensor[1]], self.word_tensor[0]))).cuda()
+                t_feat = F.normalize(scatter(self.t_feat[self.word_tensor[1]], self.word_tensor[0], dim=0, reduce="mean")).to(device)
                 feature = torch.cat((feature, t_feat), dim=1)
             else:
                 feature = torch.cat((feature, self.t_feat), dim=1)
@@ -112,7 +113,7 @@ class CLCRec(torch.nn.Module):
         head_embed = F.normalize(pos_item_embedding, dim=1)
 
         all_item_input = all_item_embedding.clone()
-        rand_index = torch.randint(all_item_embedding.size(0), (int(all_item_embedding.size(0)*self.num_sample), )).cuda()
+        rand_index = torch.randint(all_item_embedding.size(0), (int(all_item_embedding.size(0)*self.num_sample), )).to(device)
         all_item_input[rand_index] = all_item_feat[rand_index].clone()
 
         self.contrastive_loss_1 = self.loss_contrastive(head_embed, head_feat, self.temp_value)

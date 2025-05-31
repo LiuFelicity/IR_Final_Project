@@ -1,0 +1,17 @@
+Namespace(PATH_weight_load=None, PATH_weight_save=None, batch_size=256, data_path='www', dim_E=64, has_a='True', has_t='True', has_v='True', l_r=0.001, lr_lambda=0.5, model_name='CLCRec', no_cuda=False, num_epoch=1000, num_neg=128, num_sample=0.5, num_workers=4, prefix='', reg_weight=0.1, save_file='', seed=1, step=2000, temp_value=2.0, topK=10)
+-----------Val Precition:0.1745 Recall:0.0792 NDCG:0.1891-----------
+-----------Val Warm Precition:0.1991 Recall:0.3184 NDCG:0.3332-----------
+-----------Val Cold Precition:0.0329 Recall:0.0176 NDCG:0.0324-----------
+-----------Test Precition:0.1765 Recall:0.0674 NDCG:0.1887-----------
+-----------Test Warm Precition:0.1989 Recall:0.3166 NDCG:0.3314-----------
+-----------Test Cold Precition:0.0503 Recall:0.0239 NDCG:0.0468-----------lr:0.001 	 reg_weight:0.1 is Nan
+Namespace(PATH_weight_load=None, PATH_weight_save=None, batch_size=256, data_path='www', dim_E=64, has_a='True', has_t='True', has_v='True', l_r=0.001, lr_lambda=0.5, model_name='CLCRec', no_cuda=False, num_epoch=1000, num_neg=128, num_sample=0.5, num_workers=4, prefix='', reg_weight=0.1, save_file='', seed=1, step=2000, temp_value=2.0, topK=10)
+-----------Val Precision:0.2150 Recall:0.2167 NDCG:0.2429-----------
+-----------Val Warm Precision:0.1988 Recall:0.3429 NDCG:0.3302-----------
+-----------Val Cold Precision:0.1767 Recall:0.1864 NDCG:0.1929-----------Namespace(PATH_weight_load=None, PATH_weight_save=None, batch_size=256, data_path='www', dim_E=64, has_a='True', has_t='True', has_v='True', l_r=0.001, lr_lambda=0.5, model_name='CLCRec', no_cuda=False, num_epoch=1000, num_neg=128, num_sample=0.5, num_workers=4, prefix='', reg_weight=0.1, save_file='', seed=1, step=2000, temp_value=2.0, topK=10)
+-----------Val Precision:0.2168 Recall:0.0964 NDCG:0.2627-----------
+-----------Val Warm Precision:0.2213 Recall:0.3497 NDCG:0.3709-----------
+-----------Val Cold Precision:0.0669 Recall:0.0365 NDCG:0.0704-----------Namespace(PATH_weight_load=None, PATH_weight_save=None, batch_size=256, data_path='www', dim_E=64, has_a='True', has_t='True', has_v='True', l_r=0.001, lr_lambda=0.5, model_name='CLCRec', no_cuda=False, num_epoch=1000, num_neg=128, num_sample=0.5, num_workers=4, prefix='', reg_weight=0.1, save_file='', seed=1, step=2000, temp_value=2.0, topK=10)
+-----------Val Precision:0.1999 Recall:0.2014 NDCG:0.2347-----------
+-----------Val Warm Precision:0.2020 Recall:0.3475 NDCG:0.3376-----------
+-----------Val Cold Precision:0.0782 Recall:0.0836 NDCG:0.0844-----------
