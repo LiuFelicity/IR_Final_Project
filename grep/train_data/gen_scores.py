@@ -62,19 +62,18 @@ Here are the activities in <file name>: <content> format:\n""" + '\n'.join([
 
 def gen_scores():
     output_path = 'train_data/user_scores.jsonl'  # Use .jsonl for JSON Lines format
-    for j in range(2411, 5000, 20):
-        for i in range(j, j+20):
-            user = user_profiles[i]
-            print(f"({i+1}/{len(user_profiles)}) Recommending for {user['id']}")
-            selected_activities = random.sample(activities, 15)
-            recs = recommend_activities_for_user(user, selected_activities)
-            record = {
-                'user': user['id'],
-                'rec': recs
-            }
-            with open(output_path, 'a', encoding='utf-8') as f:
-                f.write(json.dumps(record, ensure_ascii=False) + '\n')
-        time.sleep(60)
+    for i in range(5000):
+        user = user_profiles[i]
+        print(f"({i+1}/{len(user_profiles)}) Recommending for {user['id']}")
+        selected_activities = random.sample(activities, 15)
+        recs = recommend_activities_for_user(user, selected_activities)
+        record = {
+            'user': user['id'],
+            'rec': recs
+        }
+        with open(output_path, 'a', encoding='utf-8') as f:
+            f.write(json.dumps(record, ensure_ascii=False) + '\n')
+        time.sleep(3)
 
 def fix_missing_scores():
     input_path = 'train_data/user_scores.jsonl'
