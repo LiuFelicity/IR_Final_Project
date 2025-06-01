@@ -85,7 +85,6 @@ def fix_missing_scores():
                 return user
         return None
 
-    num_of_requests = 0
     with open(input_path, 'r', encoding='utf-8') as fin, open(output_path, 'w', encoding='utf-8') as fout:
         for line in fin:
             try:
@@ -97,14 +96,12 @@ def fix_missing_scores():
                         print(f"Regenerating recommendation for user {user_id}")
                         selected_activities = random.sample(activities, 15)
                         recs = recommend_activities_for_user(user, selected_activities)
-                        num_of_requests += 1
                         obj['rec'] = recs
+                        time.sleep(3)
                 fout.write(json.dumps(obj, ensure_ascii=False) + '\n')
             except Exception as e:
                 print(f"Error processing line: {e}")
                 fout.write(line)  # Write the original line if error
-            if num_of_requests % 20 == 0:
-                time.sleep(60) # avoid rate limit
 
 
 if __name__ == '__main__':
