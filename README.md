@@ -34,6 +34,9 @@ IR_Final_Project/
 │       ├── profile.html       # User profile creation page
 │       ├── recommendations.html # Activity rating page
 │       └── thank_you.html     # Thank you page
+|── method2/
+│   ├── assignment.py          # same as the assignment2, just cache
+│   ├── orginal.py             # you can run it to do bpr
 └── CLCRec/
     ├── ...                    # Sub-project for Contrastive Learning for Cold-start Recommendation
 ```
@@ -63,6 +66,10 @@ IR_Final_Project/
     -   Run `grep/activity_html.py` to download each opportunity's detail HTML into `grep/activity_data/`.
     ```bash
     python grep/activity_html.py
+    ```
+    - If you want all data of train miss
+    ```bash
+    python grep/fetch_missing_activities.py
     ```
 
 5.  **Step 4: Extract main content**

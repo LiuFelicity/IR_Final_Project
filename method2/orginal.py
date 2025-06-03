@@ -7,6 +7,8 @@ import time
 import random
 import numpy as np
 import json
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.decomposition import TruncatedSVD
 
 def sigma(x):
     return 1 / (1 + math.exp(-x))
@@ -37,33 +39,39 @@ def load_user_scores(file_path):
 
     return user_scores
 
-def load_and_copy_item_vectors(file_path):
+def load_and_copy_item_vectors():
     """
-    Load vectors from a .npz file and convert them into a NumPy array.
-
-    Args:
-        file_path (str): Path to the .npz file.
+    Dynamically compute LSI vectors for documents in `activity_data_text`.
 
     Returns:
         tuple: A tuple containing the original and real item vectors, and a mapping from file names (without .txt) to integer indices.
     """
-    data = np.load(file_path)
-    print(f"NpzFile '{file_path}' with keys: {list(data.keys())}")
+    dir_path = os.path.join(os.path.dirname(__file__), '../grep/activity_data_text')
+    files = [f for f in os.listdir(dir_path) if f.endswith('.txt')]
 
-    # 加載 file_names 和 vectors
-    if 'file_names' in data and 'vectors' in data:
-        file_names = data['file_names']
-        vectors = data['vectors']
-    else:
-        raise KeyError("'file_names' or 'vectors' key not found in the .npz file.")
+    # Read all documents
+    documents = []
+    file_names = []
+    for filename in files:
+        with open(os.path.join(dir_path, filename), 'r', encoding='utf-8') as file:
+            text = file.read().lower()
+            documents.append(text)
+            file_names.append(filename)
 
-    # 清理 file_names，去掉空格並統一大小寫
+    # Build term-document matrix (TF-IDF)
+    vectorizer = TfidfVectorizer(token_pattern=r'(?u)\b[a-zA-Z][a-zA-Z]+\b', stop_words='english')
+    X = vectorizer.fit_transform(documents)
+
+    # Apply Latent Semantic Indexing (LSI) using SVD
+    n_components = 100  # You can adjust this value
+    svd = TruncatedSVD(n_components=n_components, random_state=42)
+    X_lsi = svd.fit_transform(X)
+
+    # Create file name to index mapping
     cleaned_file_names = [file_name.strip().lower().replace('.txt', '') for file_name in file_names]
-
-    # 創建 file_name 到整數索引的映射
     file_to_index = {file_name: idx for idx, file_name in enumerate(cleaned_file_names)}
 
-    return vectors, vectors.copy(), file_to_index
+    return X_lsi, X_lsi.copy(), file_to_index
 
 def initialize_user_vector(num_users=5000, vector_dim=100):
     """
@@ -161,8 +169,8 @@ def BPR_gradient(rate=0.01, iterations=30, train_num=4000, lam=0.009, user_score
     print("BPR gradient done.")
 
     # 在程式結尾輸出缺失的項目
-    # if missing_items:
-    #     print("Missing items:", set(missing_items))
+    if missing_items:
+        print("Missing items:", set(missing_items))
 
 def BPR_evluate(train_num, user_scores, lam, user_vector, item_vector):
     """
@@ -235,12 +243,12 @@ if __name__ == '__main__':
         user_vector = initialize_user_vector()
         user_scores = load_user_scores('../grep/train_data/user_scores.jsonl')
         # print("Loaded user scores:", user_scores)
-        item_vector_original, item_vector_real, file_to_vector = load_and_copy_item_vectors('../grep/doc_data_lsi.npz')
+        item_vector_original, item_vector_real, file_to_vector = load_and_copy_item_vectors()
         # print(file_to_vector)
         # train
         BPR_gradient(
             rate=0.01,
-            iterations=500,
+            iterations=100,
             train_num=4000,
             lam=0.009,
             user_scores=user_scores,
@@ -252,7 +260,7 @@ if __name__ == '__main__':
     elif model == "item_cold_start":
         user_vector = initialize_user_vector()
         user_scores = load_user_scores('../grep/train_data/user_scores.jsonl')
-        item_vector_original, item_vector_real, file_to_vector = load_and_copy_item_vectors('../grep/doc_data_lsi.npz')
+        item_vector_original, item_vector_real, file_to_vector = load_and_copy_item_vectors()
         # print(file_to_vector)
         # train
         BPR_gradient(
