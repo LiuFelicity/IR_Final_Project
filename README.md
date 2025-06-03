@@ -148,3 +148,16 @@ The `CLCRec/` directory contains a separate project implementing "Contrastive Le
   pages     = {--},
   year      = {2021}
 }
+
+## TaNP Sub-project
+# TaNP
+The `TaNP-main/` directory contains a separate project implementing "Task-adaptive Neural Process for User Cold-Start Recommendation". Please refer to `TaNP-main/README.md` for details on that specific project.
+
+```
+@inproceedings{lincsr2021,
+  title={Task-adaptive Neural Process for User Cold-Start Recommendation},
+  author={Lin, Xixun and Wu, Jia and Zhou, Chuan and Pan, Shirui and Cao, Yanan and Wang, Bin},
+  booktitle={ACM International World Wide Web Conferences (WWW)},
+  year={2021}
+}
+```
