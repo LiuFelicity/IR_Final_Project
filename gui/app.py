@@ -6,7 +6,6 @@ import numpy as np
 
 # Define lists directly in app.py based on gen_user_profile.py
 AGES_OPTIONS = ['Freshman/Sophomore', 'Junior/Senior', 'Master', 'PhD']
-COUNTRIES_OPTIONS = ['Europe', 'America', 'Asia']
 DEPARTMENTS_OPTIONS = [
     'Department of Chinese Literature',
     'Department of Foreign Languages and Literatures',
@@ -162,7 +161,6 @@ def create_profile(user_name):
                 'name': user_name,
                 'age': request.form['age'],
                 'department': request.form['department'],
-                'country': request.form['country'],
                 'ratings': {}
             }
             save_users(users)
@@ -171,8 +169,7 @@ def create_profile(user_name):
     return render_template('profile.html',
                            user_name=user_name,
                            age_options=AGES_OPTIONS,
-                           department_options=DEPARTMENTS_OPTIONS,
-                           country_options=COUNTRIES_OPTIONS)
+                           department_options=DEPARTMENTS_OPTIONS)
 
 @app.route('/recommendations/<user_name>', methods=['GET', 'POST'])
 def recommendations(user_name):
@@ -241,7 +238,6 @@ if __name__ == '__main__':
 <h1>Profile for {{ user_name }}</h1><form method="post">
 <label for="age">Age:</label><select name="age" required>{% for o in age_options %}<option value="{{o}}">{{o}}</option>{% endfor %}</select><br>
 <label for="department">Dept:</label><select name="department" required>{% for o in department_options %}<option value="{{o}}">{{o}}</option>{% endfor %}</select><br>
-<label for="country">Country:</label><select name="country" required>{% for o in country_options %}<option value="{{o}}">{{o}}</option>{% endfor %}</select><br>
 <button type="submit">Save</button></form></body></html>''',
         "recommendations.html": '''
 <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Rate</title></head><body>
