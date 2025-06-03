@@ -130,6 +130,13 @@ The GUI allows new users to:
 *   Receive and rate a selection of 10 randomly presented activities.
 User profiles and their ratings are stored in `gui/users.json`.
 
+## method2
+In this part, we want to use bpr, make sure you already do fetch_missing_activities.py and content.py.
+- If you want to run Original BPR
+```bash
+python orginal.py -m Original
+```
+
 ## Notes
 -   All scripts are written in Python and primarily use `requests` and `BeautifulSoup` for web scraping and parsing, and `numpy` for numerical operations.
 -   The GUI is built using Flask.
