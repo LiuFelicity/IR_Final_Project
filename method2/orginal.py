@@ -86,7 +86,7 @@ def initialize_user_vector(num_users=5000, vector_dim=100):
     """
     return np.zeros((num_users, vector_dim))
 
-def BPR_gradient(rate=0.01, iterations=30, train_num=4000, lam=0.009, user_scores=None, file_to_vector=None, user_vector=None, item_vector=None):
+def BPR_gradient(rate=0.01, iterations=30, train_num=4000, lam=0.009, user_scores=None, file_to_vector=None, user_vector=None, item_vector=None, item_vector_original=None, lambda_tfidf=0):
     """
     Perform BPR gradient descent using user scores and item vectors.
 
@@ -158,8 +158,8 @@ def BPR_gradient(rate=0.01, iterations=30, train_num=4000, lam=0.009, user_score
                 # 真正的
                 tmp = 1-sigma(np.dot(user_vec, high_item_vec) - np.dot(user_vec, low_item_vec))
                 user_vector[user] += rate * (np.dot(tmp, (high_item_vec - low_item_vec)) - 2* lam * user_vec)
-                high_item_vec += rate * (tmp * user_vec - 2 * lam * high_item_vec)
-                low_item_vec += rate * (-tmp * user_vec - 2 * lam * low_item_vec)
+                high_item_vec += rate * (tmp * user_vec - 2 * lam * high_item_vec - 2 * lambda_tfidf * (high_item_vec - item_vector_original[high_item_idx]))
+                low_item_vec += rate * (-tmp * user_vec - 2 * lam * low_item_vec  - 2 * lambda_tfidf * (low_item_vec  - item_vector_original[low_item_idx]))
 
             except KeyError as e:
                 # print(f"KeyError: {e}. Skipping this pair.")
@@ -238,7 +238,7 @@ if __name__ == '__main__':
     model = args.model
     np.random.seed(817)
     
-    if model == "Original":
+    if model == "original":
     # 預處理
         user_vector = initialize_user_vector()
         user_scores = load_user_scores('../grep/train_data/user_scores.jsonl')
@@ -254,7 +254,9 @@ if __name__ == '__main__':
             user_scores=user_scores,
             file_to_vector=file_to_vector,
             user_vector=user_vector,
-            item_vector=item_vector_real
+            item_vector=item_vector_real,
+            item_vector_original = item_vector_original,
+            lambda_tfidf=0 # only for item_cold_start model
         )
         # test
     elif model == "item_cold_start":
@@ -265,13 +267,15 @@ if __name__ == '__main__':
         # train
         BPR_gradient(
             rate=0.01,
-            iterations=1,
+            iterations=100,
             train_num=4000,
             lam=0.009,
             user_scores=user_scores,
             file_to_vector=file_to_vector,
             user_vector=user_vector,
-            item_vector=item_vector_original
+            item_vector=item_vector_original,
+            item_vector_original = item_vector_original,
+            lambda_tfidf=0.001 # only for item_cold_start model
         )
     end_time = time.time()
     print(f"Execution time: {end_time - start_time:.2f} sec")

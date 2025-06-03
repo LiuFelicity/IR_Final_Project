@@ -132,9 +132,13 @@ User profiles and their ratings are stored in `gui/users.json`.
 
 ## method2
 In this part, we want to use bpr, make sure you already do fetch_missing_activities.py and content.py.
-- If you want to run Original BPR
+- If you want to run **original** BPR
 ```bash
-python orginal.py -m Original
+python orginal.py -m original
+```
+- If you want to run **item cold start** BPR
+```bash
+python orginal.py -m item_cold_start
 ```
 
 ## Notes
