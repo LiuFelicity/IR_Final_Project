@@ -1,0 +1,103 @@
+{
+    "Lilian": {
+        "name": "Lilian",
+        "age": "Freshman/Sophomore",
+        "department": "Department of Computer Science and Information Engineering",
+        "ratings": {}
+    },
+    "Fanshi": {
+        "name": "Fanshi",
+        "age": "Freshman/Sophomore",
+        "department": "Department of Accounting",
+        "ratings": {}
+    },
+    "Hello": {
+        "name": "Hello",
+        "age": "Freshman/Sophomore",
+        "department": "Department of Atmospheric Sciences",
+        "ratings": {}
+    },
+    "CC": {
+        "name": "CC",
+        "age": "Freshman/Sophomore",
+        "department": "Department of Accounting",
+        "ratings": {}
+    },
+    "LALALALLAALA": {
+        "name": "LALALALLAALA",
+        "age": "Freshman/Sophomore",
+        "department": "Department of Accounting",
+        "ratings": {}
+    },
+    "Alalalaladoremifaso": {
+        "name": "Alalalaladoremifaso",
+        "age": "Freshman/Sophomore",
+        "department": "Department of Accounting",
+        "ratings": {}
+    },
+    "give up studying": {
+        "name": "give up studying",
+        "age": "Freshman/Sophomore",
+        "department": "Department of Chinese Literature",
+        "ratings": {}
+    },
+    "ko ko": {
+        "name": "ko ko",
+        "age": "Freshman/Sophomore",
+        "department": "Department of Chemistry",
+        "ratings": {}
+    },
+    "new user": {
+        "name": "new user",
+        "age": "Freshman/Sophomore",
+        "department": "Department of Business Administration",
+        "ratings": {}
+    },
+    "hey": {
+        "name": "hey",
+        "age": "Freshman/Sophomore",
+        "department": "Department of Accounting",
+        "ratings": {}
+    },
+    "e": {
+        "name": "e",
+        "age": "Freshman/Sophomore",
+        "department": "Department of Accounting",
+        "ratings": {}
+    },
+    "Felicity": {
+        "name": "Felicity",
+        "age": "Freshman/Sophomore",
+        "department": "Department of Accounting",
+        "ratings": {}
+    },
+    "Hey": {
+        "name": "Hey",
+        "age": "Freshman/Sophomore",
+        "department": "Department of Accounting",
+        "ratings": {}
+    },
+    "aa": {
+        "name": "aa",
+        "age": "Freshman/Sophomore",
+        "department": "Department of Social Work",
+        "ratings": {
+            "who-internship-program.txt": 1,
+            "course-on-scientific-research-paper-writing.txt": 2,
+            "university-of-british-columbia-business-communications-course.txt": 3,
+            "mccall-macbain-scholarship-in-canada.txt": 3,
+            "global-leaders-scholarship-at-university-of-bath.txt": 2,
+            "digital-marketing-analytics-free-course.txt": 1,
+            "university-of-alberta-mba-scholarships.txt": 2,
+            "chevening-fellowships-in-uk.txt": 4,
+            "public-speaking-at-harvard-university-free-online-course.txt": 5,
+            "anthony-lester-fellowship.txt": 2
+        }
+    },
+    "aaa": {
+        "name": "aaa",
+        "age": "Master",
+        "department": "Department of Agricultural Chemistry",
+        "ratings": {}
+    }
+}
