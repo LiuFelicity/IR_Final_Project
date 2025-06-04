@@ -3,6 +3,11 @@ import os
 import random
 import json
 import numpy as np
+import sys
+
+# Add the parent directory to the Python path to ensure the method2 module can be imported.
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+from method2.orginal import User
 
 # Define lists directly in app.py based on gen_user_profile.py
 AGES_OPTIONS = ['Freshman/Sophomore', 'Junior/Senior', 'Master', 'PhD']
@@ -190,16 +195,21 @@ def recommendations(user_name):
                     print(f"Warning: Invalid rating value for {activity_id}: {value}")
         users[user_name]['ratings'] = current_user_ratings
         save_users(users)
+
+        # Update the dataset after user submits their ratings
+        user_instance = User(name=user_name)
+        user_instance.update_user_scores(user_name, current_user_ratings)
+
         return redirect(url_for('thank_you', user_name=user_name))
 
     if not all_activity_filenames:
         return "Error: No activities loaded. Please check activity data files (e.g., grep/doc_data_lsi.npz).", 500
 
-    num_to_recommend = 10
-    sample_size = min(num_to_recommend, len(all_activity_filenames))
-    recommended_filenames = random.sample(all_activity_filenames, sample_size) if sample_size > 0 else []
-    
-    recommended_activities = [get_activity_details(fname) for fname in recommended_filenames]
+    # Obtain recommendations for the user
+    user_instance = User(name=user_name)
+    recommended_items = user_instance.recommend(user_name=user_name, top_k=10)
+    print(f"Recommended items for {user_name}: {recommended_items}")
+    recommended_activities = [get_activity_details(item+".txt") for item in recommended_items]
     user_ratings = users[user_name].get('ratings', {})
 
     return render_template('recommendations.html',

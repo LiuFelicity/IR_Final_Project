@@ -74,148 +74,110 @@ def load_and_copy_item_vectors():
 
     return X_lsi, X_lsi.copy(), file_to_index
 
-
-class User:
+def add_user(user_name, vector_dim=100, user_file='user_vectors.pkl'):
     """
-    A class to represent a user with a name and vector.
+    Add and initialize a new user, automatically loading and saving the users dictionary.
 
-    Attributes:
-        name (str): The name of the user.
-        vector (np.ndarray): The vector representing the user.
+    Args:
+        user_name (str): The name of the user to add.
+        vector_dim (int): Dimension of the user vector.
+        user_file (str): File path to load and save user vectors (default: 'user_vectors.pkl').
+
+    Returns:
+        User: The newly created User instance.
     """
-    def __init__(self, name, vector_dim=100):
-        self.name = name
-        self.vector = np.zeros(vector_dim)
+    user_file = os.path.join(os.path.dirname(__file__), user_file)
+    # Load existing users
+    try:
+        user_vectors, _, _ = load_vectors(user_file=user_file)
+    except FileNotFoundError:
+        user_vectors = {}
 
-    def add_user(user_name, vector_dim=100, user_file='user_vectors.pkl'):
-        """
-        Add and initialize a new user, automatically loading and saving the users dictionary.
+    # Add the user if not already present
+    if user_name not in user_vectors:
+        user_vectors[user_name] = np.zeros(vector_dim)
 
-        Args:
-            user_name (str): The name of the user to add.
-            vector_dim (int): Dimension of the user vector.
-            user_file (str): File path to load and save user vectors (default: 'user_vectors.pkl').
+    # Save updated users
+    with open(user_file, 'wb') as f:
+        pickle.dump(user_vectors, f)
 
-        Returns:
-            User: The newly created User instance.
-        """
-        # Load existing users
-        try:
-            user_vectors, _, _ = User.load_vectors(user_file=user_file)
-        except FileNotFoundError:
-            user_vectors = {}
+    print(f"User {user_name} added and saved to {user_file}")
+    return user_vectors[user_name]
 
-        # Add the user if not already present
-        if user_name not in user_vectors:
-            user_vectors[user_name] = np.zeros(vector_dim)
+def initialize_users(user_scores, vector_dim=100, train_num=4000):
+    """
+    Initialize users as instances of the User class.
 
-        # Save updated users
-        with open(user_file, 'wb') as f:
-            pickle.dump(user_vectors, f)
+    Args:
+        user_scores (dict): User scores in the format {user_name: [(item, score), ...]}.
+        vector_dim (int): Dimension of the user vector.
 
-        print(f"User {user_name} added and saved to {user_file}")
-        return user_vectors[user_name]
-    
-    def initialize_users(user_scores, vector_dim=100, train_num=4000):
-        """
-        Initialize users as instances of the User class.
+    Returns:
+        dict: A dictionary where keys are user names and values are User instances.
+    """
+    users = {}
+    for user_name in list(user_scores.keys())[:train_num]:
+        users[user_name] = User(name=user_name, vector_dim=vector_dim)
+    return users
 
-        Args:
-            user_scores (dict): User scores in the format {user_name: [(item, score), ...]}.
-            vector_dim (int): Dimension of the user vector.
+def save_vectors(users, item_vector, file_to_vector, user_file='user_vectors.pkl', item_file='item_vectors.pkl', file_to_vector_file='file_to_vector.pkl'):
+    """
+    Save user vectors, item vectors, and file_to_vector to files.
 
-        Returns:
-            dict: A dictionary where keys are user names and values are User instances.
-        """
-        users = {}
-        for user_name in list(user_scores.keys())[:train_num]:
-            users[user_name] = User(name=user_name, vector_dim=vector_dim)
-        return users
+    Args:
+        users (dict): A dictionary of User instances.
+        item_vector (np.ndarray): Item vector matrix.
+        file_to_vector (dict): Mapping from file names to vector indices.
+        user_file (str): File path to save user vectors (default: 'user_vectors.pkl').
+        item_file (str): File path to save item vectors (default: 'item_vectors.pkl').
+        file_to_vector_file (str): File path to save file_to_vector (default: 'file_to_vector.pkl').
+    """
+    user_vectors = {user_name: user.vector for user_name, user in users.items()}
+    with open(user_file, 'wb') as f:
+        pickle.dump(user_vectors, f)
 
-    def save_vectors(users, item_vector, file_to_vector, user_file='user_vectors.pkl', item_file='item_vectors.pkl', file_to_vector_file='file_to_vector.pkl'):
-        """
-        Save user vectors, item vectors, and file_to_vector to files.
+    with open(item_file, 'wb') as f:
+        pickle.dump(item_vector, f)
 
-        Args:
-            users (dict): A dictionary of User instances.
-            item_vector (np.ndarray): Item vector matrix.
-            file_to_vector (dict): Mapping from file names to vector indices.
-            user_file (str): File path to save user vectors (default: 'user_vectors.pkl').
-            item_file (str): File path to save item vectors (default: 'item_vectors.pkl').
-            file_to_vector_file (str): File path to save file_to_vector (default: 'file_to_vector.pkl').
-        """
-        user_vectors = {user_name: user.vector for user_name, user in users.items()}
-        with open(user_file, 'wb') as f:
-            pickle.dump(user_vectors, f)
+    with open(file_to_vector_file, 'wb') as f:
+        pickle.dump(file_to_vector, f)
 
-        with open(item_file, 'wb') as f:
-            pickle.dump(item_vector, f)
+    print(f"User vectors saved to {user_file}")
+    print(f"Item vectors saved to {item_file}")
+    print(f"File-to-vector mapping saved to {file_to_vector_file}")
 
-        with open(file_to_vector_file, 'wb') as f:
-            pickle.dump(file_to_vector, f)
+def load_vectors(user_file='user_vectors.pkl', item_file='item_vectors.pkl', file_to_vector_file='file_to_vector.pkl'):
+    """
+    Load user vectors, item vectors, and file_to_vector from files.
 
-        print(f"User vectors saved to {user_file}")
-        print(f"Item vectors saved to {item_file}")
-        print(f"File-to-vector mapping saved to {file_to_vector_file}")
+    Args:
+        user_file (str): File path to load user vectors (default: 'user_vectors.pkl').
+        item_file (str): File path to load item vectors (default: 'item_vectors.pkl').
+        file_to_vector_file (str): File path to load file_to_vector (default: 'file_to_vector.pkl').
 
-    def load_vectors(user_file='user_vectors.pkl', item_file='item_vectors.pkl', file_to_vector_file='file_to_vector.pkl'):
-        """
-        Load user vectors, item vectors, and file_to_vector from files.
+    Returns:
+        tuple: A tuple containing user vectors (dict), item vectors (np.ndarray), and file_to_vector (dict).
+    """
+    user_file = os.path.join(os.path.dirname(__file__), user_file)
+    item_file = os.path.join(os.path.dirname(__file__), item_file)
+    file_to_vector_file = os.path.join(os.path.dirname(__file__), file_to_vector_file)
 
-        Args:
-            user_file (str): File path to load user vectors (default: 'user_vectors.pkl').
-            item_file (str): File path to load item vectors (default: 'item_vectors.pkl').
-            file_to_vector_file (str): File path to load file_to_vector (default: 'file_to_vector.pkl').
+    with open(user_file, 'rb') as f:
+        user_vectors = pickle.load(f)
 
-        Returns:
-            tuple: A tuple containing user vectors (dict), item vectors (np.ndarray), and file_to_vector (dict).
-        """
-        with open(user_file, 'rb') as f:
-            user_vectors = pickle.load(f)
+    with open(item_file, 'rb') as f:
+        item_vector = pickle.load(f)
 
-        with open(item_file, 'rb') as f:
-            item_vector = pickle.load(f)
+    with open(file_to_vector_file, 'rb') as f:
+        file_to_vector = pickle.load(f)
 
-        with open(file_to_vector_file, 'rb') as f:
-            file_to_vector = pickle.load(f)
+    print(f"User vectors loaded from {user_file}")
+    print(f"Item vectors loaded from {item_file}")
+    print(f"File-to-vector mapping loaded from {file_to_vector_file}")
 
-        print(f"User vectors loaded from {user_file}")
-        print(f"Item vectors loaded from {item_file}")
-        print(f"File-to-vector mapping loaded from {file_to_vector_file}")
+    return user_vectors, item_vector, file_to_vector
 
-        return user_vectors, item_vector, file_to_vector
-    def recommend(user_name, user_file='user_vectors.pkl', item_file='item_vectors.pkl', top_k=5):
-        """
-        Recommend items for a given user based on inner product. Reload vectors before recommending.
-
-        Args:
-            user_name (str): Name of the user to recommend items for.
-            user_file (str): File path to load user vectors (default: 'user_vectors.pkl').
-            item_file (str): File path to load item vectors (default: 'item_vectors.pkl').
-            top_k (int): Number of top recommendations to return (default: 10).
-
-        Returns:
-            list: A list of top_k recommended item indices.
-        """
-        # Reload vectors
-        user_vectors, item_vector, file_to_vector = User.load_vectors(user_file, item_file)
-        
-        if user_name not in user_vectors:
-            print(f"User {user_name} not found.")
-            return []
-
-        user_vec = user_vectors[user_name]
-        scores = np.dot(item_vector, user_vec)  # 計算內積
-        top_indices = np.argsort(scores)[::-1][:top_k]  # 按分數排序並取前 top_k
-        if file_to_vector:
-            index_to_file = {v: k for k, v in file_to_vector.items()}  # 反轉字典
-            top_items = [index_to_file[idx] for idx in top_indices]
-        else:
-            top_items = top_indices  # 如果沒有提供 file_to_vector，返回索引
-
-        return top_items
-    
-    def BPR_gradient(rate=0.01, iterations=30, train_num=4000, lam=0.009, user_scores=None, file_to_vector=None, users=None, item_vector=None, item_vector_original=None, lambda_tfidf=0):
+def BPR_gradient(rate=0.01, iterations=30, train_num=4000, lam=0.009, user_scores=None, file_to_vector=None, users=None, item_vector=None, item_vector_original=None, lambda_tfidf=0):
         """
         Perform BPR gradient descent using user scores and item vectors.
 
@@ -273,111 +235,126 @@ class User:
                 except KeyError as e:
                     missing_items.append(str(e))
                     continue
-        User.save_vectors(users, item_vector, file_to_vector)
+        save_vectors(users, item_vector, file_to_vector)
         print("BPR gradient done.")
 
         if missing_items:
             print("Missing items:", set(missing_items))
 
-def initialize_user_vector(num_users=5000, vector_dim=100):
+class User:
     """
-    Initialize the user vector as a 5000x100 matrix filled with zeros.
+    A class to represent a user with a name and vector.
 
-    Args:
-        num_users (int): Number of users (default: 5000).
-        vector_dim (int): Dimension of the user vector (default: 100).
-
-    Returns:
-        np.ndarray: A matrix of shape (num_users, vector_dim) filled with zeros.
+    Attributes:
+        name (str): The name of the user.
+        vector (np.ndarray): The vector representing the user.
     """
-    return np.zeros((num_users, vector_dim))
+    def __init__(self, name, vector_dim=100):
+        self.name = name
+        self.vector = np.zeros(vector_dim)
+        add_user(name, vector_dim=vector_dim)
 
-def BPR_gradient2(rate=0.01, iterations=30, train_num=4000, lam=0.009, user_scores=None, file_to_vector=None, user_vector=None, item_vector=None, item_vector_original=None, lambda_tfidf=0):
-    """
-    Perform BPR gradient descent using user scores and item vectors.
+   
 
-    Args:
-        rate (float): Learning rate.
-        iterations (int): Number of iterations.
-        train_num (int): Number of training samples per iteration.
-        lam (float): Regularization parameter.
-        user_scores (dict): User scores in the format {user_id: [(item, score), ...]}.
-        file_to_vector (dict): Mapping from item names to vectors.
-        user_vector (np.ndarray): User vector matrix.
-        item_vector (dict): Mapping from item names to their vectors.
-    """
-    print("BPR gradient...")
+    def recommend(self, user_name, user_file='user_vectors.pkl', item_file='item_vectors.pkl', top_k=5):
+        """
+        Recommend items for a given user based on inner product. Reload vectors before recommending.
 
-    # 在 BPR_gradient 函數中記錄缺失的項目
-    missing_items = []
+        Args:
+            user_name (str): Name of the user to recommend items for.
+            user_file (str): File path to load user vectors (default: 'user_vectors.pkl').
+            item_file (str): File path to load item vectors (default: 'item_vectors.pkl').
+            top_k (int): Number of top recommendations to return (default: 10).
 
-    for _ in range(iterations):
-        if _ % 10 == 0:
-            print(f"Iteration {_+1}/{iterations}, BPR loss = {BPR_evluate(train_num, user_scores, lam, user_vector, item_vector)}")
-        for user in range(1, train_num+1):
-            # 隨機選擇一個 user
-            # user = random.choice(list(user_scores.keys()))
-            user_items = user_scores[user]
+        Returns:
+            list: A list of top_k recommended item indices.
+        """
+        user_file = os.path.join(os.path.dirname(__file__), user_file)
+        item_file = os.path.join(os.path.dirname(__file__), item_file)
 
-            # 隨機選擇兩個不同的 item，確保分數不同
-            max_attempts = 100  # 限制迴圈次數
-            attempts = 0
-            while attempts < max_attempts:
-                item1, score1 = random.choice(user_items)
-                item2, score2 = random.choice(user_items)
-                if item1 != item2 and score1 != score2:
-                    break
-                attempts += 1
-            else:
-                # print(f"Warning: Unable to find two distinct items for user {user} after {max_attempts} attempts. Skipping.")
+        user_name = self.name
+        # Reload vectors
+        user_vectors, item_vector, file_to_vector = load_vectors(user_file, item_file)
+        
+        if user_name not in user_vectors:
+            print(f"User {user_name} not found.")
+            return []
+
+        user_vec = user_vectors[user_name]
+        scores = np.dot(item_vector, user_vec)  # 計算內積
+        # load user interaction, and remove items that the user has already interacted with by setting their scores to -inf
+        if os.path.exists('user_ratings.jsonl'):
+            user_scores = load_user_scores('user_ratings.jsonl')
+            interacted_items = {item.lower() for item, _ in user_scores.get(user_name, [])}
+            for item in interacted_items:
+                if item.lower() in file_to_vector:
+                    scores[file_to_vector[item.lower()]] = -np.inf
+        top_indices = np.argsort(scores)[::-1][:top_k]  # 按分數排序並取前 top_k
+        index_to_file = {v: k for k, v in file_to_vector.items()}  # 反轉字典
+        top_items = [index_to_file[idx] for idx in top_indices]
+
+        return top_items
+    
+
+    def update_user_scores(self, item_scores, vector_dim=100, user_file='user_vectors.pkl', item_file='item_vectors.pkl', file_to_vector_file='file_to_vector.pkl', user_rating_file='user_ratings.jsonl'):
+        """
+        Update the user vector based on multiple scores for specific items and save the updated ratings to a JSONL file.
+
+        Args:
+            user_name (str): Name of the user to update.
+            item_scores (dict): Dictionary of item names and their corresponding scores.
+            vector_dim (int): Dimension of the user vector.
+            user_file (str): File path to load user vectors (default: 'user_vectors.pkl').
+            item_file (str): File path to load item vectors (default: 'item_vectors.pkl').
+            file_to_vector_file (str): File path to load file-to-vector mapping (default: 'file_to_vector.pkl').
+            user_rating_file (str): File path to save user ratings (default: 'user_ratings.jsonl').
+
+        Returns:
+            None
+        """
+        user_name = self.name
+        user_file = os.path.join(os.path.dirname(__file__), user_file)
+        item_file = os.path.join(os.path.dirname(__file__), item_file)
+        file_to_vector_file = os.path.join(os.path.dirname(__file__), file_to_vector_file)
+        user_rating_file = os.path.join(os.path.dirname(__file__), user_rating_file)
+
+        # Reload vectors
+        user_vectors, item_vector, file_to_vector = load_vectors(user_file, item_file, file_to_vector_file)
+
+        if user_name not in user_vectors:
+            print(f"User {user_name} not found.")
+            return
+
+        user_vec = user_vectors[user_name]
+
+        # Load existing ratings if the file exists
+        existing_ratings = {}
+        if os.path.exists(user_rating_file):
+            with open(user_rating_file, 'r', encoding='utf-8') as f:
+                for line in f:
+                    data = json.loads(line)
+                    existing_ratings[data['user']] = data['rec']
+
+        # Update user vector and ratings
+        updated_ratings = existing_ratings.get(user_name, {})
+        for item_name, score in item_scores.items():
+            if item_name.lower() not in file_to_vector:
+                print(f"Item {item_name} not found. Skipping.")
                 continue
+            
+        # Save updated user vectors
+        with open(user_file, 'wb') as f:
+            pickle.dump(user_vectors, f)
 
-            # 每次迴圈輸出進度
-            # if user % 100 == 0:
-            #     print(f"Processing user {user}/{train_num}...")
+        # Save updated ratings to JSONL file
+        existing_ratings[user_name] = updated_ratings
+        with open(user_rating_file, 'w', encoding='utf-8') as f:
+            for user, rec in existing_ratings.items():
+                json.dump({'user': user, 'rec': rec}, f)
+                f.write('\n')
 
-            # 確定 label
-            if score1 > score2:
-                high_item, low_item = item1, item2
-                label_high, label_low = 1, -1
-            else:
-                high_item, low_item = item2, item1
-                label_high, label_low = 1, -1
-            # print(f"User: {user}, High Item: {high_item}, Low Item: {low_item}, Labels: {label_high}, {label_low}")
-            # 獲取對應的向量
-            try:
-                high_item_idx = file_to_vector[high_item.lower()]
-                low_item_idx = file_to_vector[low_item.lower()]
-
-                user_vec = user_vector[user]
-                high_item_vec = item_vector[high_item_idx]
-                low_item_vec = item_vector[low_item_idx]
-
-                # 計算梯度並更新
-                # loss_grad_high = label_high * sigma(-1 * label_high * np.dot(user_vec, high_item_vec))
-                # loss_grad_low = label_low * sigma(-1 * label_low * np.dot(user_vec, low_item_vec))
-
-                # user_vector[user] += rate * (loss_grad_high * high_item_vec + loss_grad_low * low_item_vec)
-                # item_vector[high_item_idx] += rate * loss_grad_high * user_vec
-                # item_vector[low_item_idx] += rate * loss_grad_low * user_vec
-
-                # 真正的
-                tmp = 1-sigma(np.dot(user_vec, high_item_vec) - np.dot(user_vec, low_item_vec))
-                user_vector[user] += rate * (np.dot(tmp, (high_item_vec - low_item_vec)) - 2* lam * user_vec)
-                high_item_vec += rate * (tmp * user_vec - 2 * lam * high_item_vec - 2 * lambda_tfidf * (high_item_vec - item_vector_original[high_item_idx]))
-                low_item_vec += rate * (-tmp * user_vec - 2 * lam * low_item_vec  - 2 * lambda_tfidf * (low_item_vec  - item_vector_original[low_item_idx]))
-
-            except KeyError as e:
-                # print(f"KeyError: {e}. Skipping this pair.")
-                missing_items.append(str(e))
-                continue
-
-    print("BPR gradient done.")
-
-    # 在程式結尾輸出缺失的項目
-    if missing_items:
-        print("Missing items:", set(missing_items))
-
+        print(f"User {user_name}'s vector and ratings updated with items and scores: {item_scores}.")
+    
 def BPR_evluate(train_num, user_scores, lam, users, item_vector):
     """
     Evaluate the BPR loss by iterating over users from 1 to train_num and their item pairs.
@@ -439,11 +416,11 @@ if __name__ == '__main__':
     if model == "original":
         # 預處理
         user_scores = load_user_scores('../grep/train_data/user_scores.jsonl')
-        users = User.initialize_users(user_scores, train_num=4000)  # 使用 User class 初始化
+        users = initialize_users(user_scores, train_num=4000)  # 使用 User class 初始化
         item_vector_original, item_vector_real, file_to_vector = load_and_copy_item_vectors()
 
         # 訓練
-        User.BPR_gradient(
+        BPR_gradient(
             rate=0.01,
             iterations=100,
             train_num=4000,
@@ -458,11 +435,11 @@ if __name__ == '__main__':
 
     elif model == "item_cold_start":
         user_scores = load_user_scores('../grep/train_data/user_scores.jsonl')
-        users = User.initialize_users(user_scores, train_num=4000)  # 使用 User class 初始化
+        users = initialize_users(user_scores, train_num=4000)  # 使用 User class 初始化
         item_vector_original, item_vector_real, file_to_vector = load_and_copy_item_vectors()
 
         # 訓練
-        User.BPR_gradient(
+        BPR_gradient(
             rate=0.01,
             iterations=100,
             train_num=4000,
@@ -476,7 +453,7 @@ if __name__ == '__main__':
         )
     elif model == "recommandation":
         #recommand for 1
-        User.add_user(user_name='Felicity')
+        add_user(user_name='Felicity')
         top_k_recommendations = User.recommend(
             user_name="Felicity",
             top_k=5
