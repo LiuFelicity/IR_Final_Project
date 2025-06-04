@@ -1,3 +1,8 @@
+"""
+This module is exactly the same as baseline.py, except that the class is called BaseUser instead of User. (just for fixing bugs, so feel free to modify it)
+For now, this module is only used in evaluation/pseudo_rating.py
+"""
+
 import os
 import argparse
 import math
