@@ -10,6 +10,10 @@ import json
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.decomposition import TruncatedSVD
 import pickle
+import sys
+
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+from gui.constants import DEPARTMENTS_OPTIONS, AGES_OPTIONS
 
 def sigma(x):
     return 1 / (1 + math.exp(-x))
@@ -101,7 +105,7 @@ def add_user(user_name, vector_dim=100, user_file='user_vectors.pkl'):
     with open(user_file, 'wb') as f:
         pickle.dump(user_vectors, f)
 
-    print(f"User {user_name} added and saved to {user_file}")
+    # print(f"User {user_name} added and saved to {user_file}")
     return user_vectors[user_name]
 
 def initialize_users(user_scores, vector_dim=100, train_num=4000):
@@ -171,13 +175,13 @@ def load_vectors(user_file='user_vectors.pkl', item_file='item_vectors.pkl', fil
     with open(file_to_vector_file, 'rb') as f:
         file_to_vector = pickle.load(f)
 
-    print(f"User vectors loaded from {user_file}")
-    print(f"Item vectors loaded from {item_file}")
-    print(f"File-to-vector mapping loaded from {file_to_vector_file}")
+    # print(f"User vectors loaded from {user_file}")
+    # print(f"Item vectors loaded from {item_file}")
+    # print(f"File-to-vector mapping loaded from {file_to_vector_file}")
 
     return user_vectors, item_vector, file_to_vector
 
-def BPR_gradient(rate=0.01, iterations=30, train_num=4000, lam=0.009, user_scores=None, file_to_vector=None, users=None, item_vector=None, item_vector_original=None, lambda_tfidf=0):
+def BPR_gradient(rate=0.01, iterations=30, train_num=4000, lam=0.009, user_scores=None, file_to_vector=None, users=None, item_vector=None, item_vector_original=None, lambda_tfidf=0, M = None, b = None, lambda_user = 0):
         """
         Perform BPR gradient descent using user scores and item vectors.
 
@@ -228,9 +232,10 @@ def BPR_gradient(rate=0.01, iterations=30, train_num=4000, lam=0.009, user_score
                     low_item_vec = item_vector[low_item_idx]
 
                     tmp = 1 - sigma(np.dot(user.vector, high_item_vec) - np.dot(user.vector, low_item_vec))
-                    user.vector += rate * (np.dot(tmp, (high_item_vec - low_item_vec)) - 2 * lam * user.vector)
+                    user.vector += rate * (np.dot(tmp, (high_item_vec - low_item_vec)) - 2 * lam * user.vector - 2 * lambda_user * ( user.vector - (M @ user.onehot.transpose() + b)))
                     high_item_vec += rate * (tmp * user.vector - 2 * lam * high_item_vec - 2 * lambda_tfidf * (high_item_vec - item_vector_original[high_item_idx]))
                     low_item_vec += rate * (-tmp * user.vector - 2 * lam * low_item_vec - 2 * lambda_tfidf * (low_item_vec - item_vector_original[low_item_idx]))
+                    b -= rate * ( 2*lambda_user * (M @ user.onehot.transpose() + b - user.vector) + 2 * lam * b )
 
                 except KeyError as e:
                     missing_items.append(str(e))
@@ -241,6 +246,56 @@ def BPR_gradient(rate=0.01, iterations=30, train_num=4000, lam=0.009, user_score
         if missing_items:
             print("Missing items:", set(missing_items))
 
+def BPR_evluate(train_num, user_scores, lam, users, item_vector):
+    """
+    Evaluate the BPR loss by iterating over users from 1 to train_num and their item pairs.
+
+    Args:
+        train_num (int): Number of users to evaluate (from 1 to train_num).
+        user_scores (dict): User scores in the format {user_name: [(item, score), ...]}.
+        lam (float): Regularization parameter.
+        users (dict): A dictionary of User instances.
+        item_vector (np.ndarray): Item vector matrix.
+
+    Returns:
+        float: The calculated BPR loss.
+    """
+    BPRloss = 0
+
+    for user_name in list(user_scores.keys())[:train_num]:
+        user = users[user_name]
+        user_vec = user.vector  # Access the vector attribute of the User object
+        user_items = user_scores[user_name]
+
+        for i in range(len(user_items)):
+            for j in range(len(user_items)):
+                if i == j:
+                    continue
+
+                item_p, score_p = user_items[i]
+                item_n, score_n = user_items[j]
+
+                if score_p == score_n:
+                    continue
+
+                if score_p < score_n:
+                    item_p, item_n = item_n, item_p
+
+                if item_p.lower() not in file_to_vector or item_n.lower() not in file_to_vector:
+                    continue
+
+                item_vec_p = item_vector[file_to_vector[item_p.lower()]]
+                item_vec_n = item_vector[file_to_vector[item_n.lower()]]
+
+                BPRloss += -math.log(sigma(np.dot(user_vec, item_vec_p) - np.dot(user_vec, item_vec_n)))
+
+    for user in users.values():
+        BPRloss += lam * np.dot(user.vector, user.vector)
+    for item_vec in item_vector:
+        BPRloss += lam * np.dot(item_vec, item_vec)
+
+    return BPRloss
+
 class User:
     """
     A class to represent a user with a name and vector.
@@ -249,12 +304,15 @@ class User:
         name (str): The name of the user.
         vector (np.ndarray): The vector representing the user.
     """
-    def __init__(self, name, vector_dim=100):
+    def __init__(self, name, vector_dim=100, department=None, age=None):
         self.name = name
         self.vector = np.zeros(vector_dim)
+        self.onehot = np.zeros(len(DEPARTMENTS_OPTIONS) + len(AGES_OPTIONS))
+        if department in DEPARTMENTS_OPTIONS:
+            self.onehot[DEPARTMENTS_OPTIONS.index(department)] = 1
+        if age in AGES_OPTIONS:
+            self.onehot[len(DEPARTMENTS_OPTIONS) + AGES_OPTIONS.index(age)] = 1
         add_user(name, vector_dim=vector_dim)
-
-   
 
     def recommend(self, user_name, user_file='user_vectors.pkl', item_file='item_vectors.pkl', top_k=5):
         """
@@ -295,7 +353,6 @@ class User:
 
         return top_items
     
-
     def update_user_scores(self, item_scores, vector_dim=100, user_file='user_vectors.pkl', item_file='item_vectors.pkl', file_to_vector_file='file_to_vector.pkl', user_rating_file='user_ratings.jsonl'):
         """
         Update the user vector based on multiple scores for specific items and save the updated ratings to a JSONL file.
@@ -354,56 +411,7 @@ class User:
                 f.write('\n')
 
         print(f"User {user_name}'s vector and ratings updated with items and scores: {item_scores}.")
-    
-def BPR_evluate(train_num, user_scores, lam, users, item_vector):
-    """
-    Evaluate the BPR loss by iterating over users from 1 to train_num and their item pairs.
 
-    Args:
-        train_num (int): Number of users to evaluate (from 1 to train_num).
-        user_scores (dict): User scores in the format {user_name: [(item, score), ...]}.
-        lam (float): Regularization parameter.
-        users (dict): A dictionary of User instances.
-        item_vector (np.ndarray): Item vector matrix.
-
-    Returns:
-        float: The calculated BPR loss.
-    """
-    BPRloss = 0
-
-    for user_name in list(user_scores.keys())[:train_num]:
-        user = users[user_name]
-        user_vec = user.vector  # Access the vector attribute of the User object
-        user_items = user_scores[user_name]
-
-        for i in range(len(user_items)):
-            for j in range(len(user_items)):
-                if i == j:
-                    continue
-
-                item_p, score_p = user_items[i]
-                item_n, score_n = user_items[j]
-
-                if score_p == score_n:
-                    continue
-
-                if score_p < score_n:
-                    item_p, item_n = item_n, item_p
-
-                if item_p.lower() not in file_to_vector or item_n.lower() not in file_to_vector:
-                    continue
-
-                item_vec_p = item_vector[file_to_vector[item_p.lower()]]
-                item_vec_n = item_vector[file_to_vector[item_n.lower()]]
-
-                BPRloss += -math.log(sigma(np.dot(user_vec, item_vec_p) - np.dot(user_vec, item_vec_n)))
-
-    for user in users.values():
-        BPRloss += lam * np.dot(user.vector, user.vector)
-    for item_vec in item_vector:
-        BPRloss += lam * np.dot(item_vec, item_vec)
-
-    return BPRloss
 
 if __name__ == '__main__':
     start_time = time.time()
@@ -413,9 +421,11 @@ if __name__ == '__main__':
     model = args.model
     np.random.seed(817)
 
+    M = np.zeros((100, len(DEPARTMENTS_OPTIONS) + len(AGES_OPTIONS)))
+    b = np.zeros(100)
     if model == "original":
         # 預處理
-        user_scores = load_user_scores('../grep/train_data/user_scores.jsonl')
+        user_scores = load_user_scores(os.path.join(os.path.dirname(__file__), '../grep/train_data/user_scores.jsonl'))
         users = initialize_users(user_scores, train_num=4000)  # 使用 User class 初始化
         item_vector_original, item_vector_real, file_to_vector = load_and_copy_item_vectors()
 
@@ -430,11 +440,13 @@ if __name__ == '__main__':
             users=users,
             item_vector=item_vector_real,
             item_vector_original=item_vector_original,
-            lambda_tfidf=0  # 只針對 item_cold_start 模型
+            lambda_tfidf=0,  # 只針對 item_cold_start 模型
+            M = M,
+            b = b
         )
 
     elif model == "item_cold_start":
-        user_scores = load_user_scores('../grep/train_data/user_scores.jsonl')
+        user_scores = load_user_scores(os.path.join(os.path.dirname(__file__), '../grep/train_data/user_scores.jsonl'))
         users = initialize_users(user_scores, train_num=4000)  # 使用 User class 初始化
         item_vector_original, item_vector_real, file_to_vector = load_and_copy_item_vectors()
 
@@ -449,7 +461,9 @@ if __name__ == '__main__':
             users=users,
             item_vector=item_vector_original,
             item_vector_original=item_vector_original,
-            lambda_tfidf=0.001  # 只針對 item_cold_start 模型
+            lambda_tfidf=0.001,  # 只針對 item_cold_start 模型
+            M = M,
+            b = b
         )
     elif model == "recommandation":
         #recommand for 1
