@@ -339,13 +339,15 @@ class User:
         name (str): The name of the user.
         vector (np.ndarray): The vector representing the user.
     """
-    def __init__(self, name, vector_dim=100, department = None, age = None):
-        user_file=os.path.join(os.path.dirname(__file__), 'user_vectors.pkl')
+    def __init__(self, name, vector_dim=100, department=None, age=None):
+        user_file = os.path.join(os.path.dirname(__file__), 'user_vectors.pkl')
         try:
             user_vectors, _, _, M, b = load_vectors()
         except FileNotFoundError:
+            M = np.zeros((100, len(DEPARTMENTS_OPTIONS) + len(AGES_OPTIONS)))
+            b = np.zeros(100)
             user_vectors = {}
-        
+
         if name not in user_vectors:
             self.name = name
             self.department = department
@@ -356,12 +358,21 @@ class User:
                     self.onehot[DEPARTMENTS_OPTIONS.index(department)] = 1
                 if age in AGES_OPTIONS:
                     self.onehot[len(DEPARTMENTS_OPTIONS) + AGES_OPTIONS.index(age)] = 1
-                self.vector = M @ self.onehot.transpose() + b # Initialize vector with one-hot encoding
+                self.vector = M @ self.onehot.transpose() + b  # Initialize vector with one-hot encoding
+                 # Add the new user to user_vectors
+                user_vectors[name] = self
+
                 # Save updated users
                 with open(user_file, 'wb') as f:
                     pickle.dump(user_vectors, f)
-                # print(f"User {user_name} added and saved to {user_file}")
-                # return user_vectors[name]
+            else:
+                self.vector = np.zeros(vector_dim)  # Default vector initialization if no department/age
+        else:
+            # Load existing user data
+            self.name = name
+            self.vector = user_vectors[name].vector
+            self.department = user_vectors[name].department
+            self.age = user_vectors[name].age
     
     def recommend(self, user_name, user_file=os.path.join(os.path.dirname(__file__),'user_vectors.pkl'), item_file=os.path.join(os.path.dirname(__file__),'item_vectors.pkl'), top_k=5):
         """
@@ -387,7 +398,7 @@ class User:
             print(f"User {user_name} not found.")
             return []
 
-        user_vec = user_vectors[user_name]
+        user_vec = user_vectors[user_name].vector
         scores = np.dot(item_vector, user_vec)  # 計算內積
         # load user interaction, and remove items that the user has already interacted with by setting their scores to -inf
         if os.path.exists(os.path.join(os.path.dirname(__file__),'user_ratings.jsonl')):
