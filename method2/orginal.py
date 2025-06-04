@@ -78,7 +78,7 @@ def load_and_copy_item_vectors():
 
     return X_lsi, X_lsi.copy(), file_to_index
 
-def add_user(user_name, vector_dim=100, user_file='user_vectors.pkl'):
+def add_user(user_name, vector_dim=100, user_file=os.path.join(os.path.dirname(__file__),'user_vectors.pkl')):
     """
     Add and initialize a new user, automatically loading and saving the users dictionary.
 
@@ -124,7 +124,7 @@ def initialize_users(user_scores, vector_dim=100, train_num=4000):
         users[user_name] = User(name=user_name, vector_dim=vector_dim)
     return users
 
-def save_vectors(users, item_vector, file_to_vector, user_file='user_vectors.pkl', item_file='item_vectors.pkl', file_to_vector_file='file_to_vector.pkl'):
+def save_vectors(users, item_vector, file_to_vector, M, b, user_file=os.path.join(os.path.dirname(__file__),'user_vectors.pkl'), item_file=os.path.join(os.path.dirname(__file__),'item_vectors.pkl'), file_to_vector_file=os.path.join(os.path.dirname(__file__),'file_to_vector.pkl'), M_file = os.path.join(os.path.dirname(__file__),'matrix_M.pkl'), b_file = os.path.join(os.path.dirname(__file__),'vector_b.pkl')):
     """
     Save user vectors, item vectors, and file_to_vector to files.
 
@@ -146,11 +146,16 @@ def save_vectors(users, item_vector, file_to_vector, user_file='user_vectors.pkl
     with open(file_to_vector_file, 'wb') as f:
         pickle.dump(file_to_vector, f)
 
+    with open(M_file, 'wb') as f:
+        pickle.dump(M, f)
+    with open(b_file, 'wb') as f:
+        pickle.dump(b, f)
+    
     print(f"User vectors saved to {user_file}")
     print(f"Item vectors saved to {item_file}")
     print(f"File-to-vector mapping saved to {file_to_vector_file}")
 
-def load_vectors(user_file='user_vectors.pkl', item_file='item_vectors.pkl', file_to_vector_file='file_to_vector.pkl'):
+def load_vectors(user_file=os.path.join(os.path.dirname(__file__),'user_vectors.pkl'), item_file=os.path.join(os.path.dirname(__file__),'item_vectors.pkl'), file_to_vector_file=os.path.join(os.path.dirname(__file__),'file_to_vector.pkl')):
     """
     Load user vectors, item vectors, and file_to_vector from files.
 
@@ -240,7 +245,7 @@ def BPR_gradient(rate=0.01, iterations=30, train_num=4000, lam=0.009, user_score
                 except KeyError as e:
                     missing_items.append(str(e))
                     continue
-        save_vectors(users, item_vector, file_to_vector)
+        save_vectors(users, item_vector, file_to_vector, M, b)
         print("BPR gradient done.")
 
         if missing_items:
@@ -314,7 +319,7 @@ class User:
             self.onehot[len(DEPARTMENTS_OPTIONS) + AGES_OPTIONS.index(age)] = 1
         add_user(name, vector_dim=vector_dim)
 
-    def recommend(self, user_name, user_file='user_vectors.pkl', item_file='item_vectors.pkl', top_k=5):
+    def recommend(self, user_name, user_file=os.path.join(os.path.dirname(__file__),'user_vectors.pkl'), item_file=os.path.join(os.path.dirname(__file__),'item_vectors.pkl'), top_k=5):
         """
         Recommend items for a given user based on inner product. Reload vectors before recommending.
 
@@ -341,8 +346,8 @@ class User:
         user_vec = user_vectors[user_name]
         scores = np.dot(item_vector, user_vec)  # 計算內積
         # load user interaction, and remove items that the user has already interacted with by setting their scores to -inf
-        if os.path.exists('user_ratings.jsonl'):
-            user_scores = load_user_scores('user_ratings.jsonl')
+        if os.path.exists(os.path.join(os.path.dirname(__file__),'user_ratings.jsonl')):
+            user_scores = load_user_scores(os.path.join(os.path.dirname(__file__),'user_ratings.jsonl'))
             interacted_items = {item.lower() for item, _ in user_scores.get(user_name, [])}
             for item in interacted_items:
                 if item.lower() in file_to_vector:
@@ -353,7 +358,7 @@ class User:
 
         return top_items
     
-    def update_user_scores(self, item_scores, vector_dim=100, user_file='user_vectors.pkl', item_file='item_vectors.pkl', file_to_vector_file='file_to_vector.pkl', user_rating_file='user_ratings.jsonl'):
+    def update_user_scores(self, item_scores, vector_dim=100, user_file=os.path.join(os.path.dirname(__file__),'user_vectors.pkl'), item_file=os.path.join(os.path.dirname(__file__),'item_vectors.pkl'), file_to_vector_file=os.path.join(os.path.dirname(__file__),'file_to_vector.pkl'), user_rating_file=os.path.join(os.path.dirname(__file__),'user_ratings.jsonl')):
         """
         Update the user vector based on multiple scores for specific items and save the updated ratings to a JSONL file.
 
