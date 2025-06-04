@@ -160,9 +160,9 @@ def save_vectors(users, item_vector, file_to_vector, M, b, user_file=os.path.joi
         item_file (str): File path to save item vectors (default: 'item_vectors.pkl').
         file_to_vector_file (str): File path to save file_to_vector (default: 'file_to_vector.pkl').
     """
-    user_vectors = {user_name: user.vector for user_name, user in users.items()}
+    # user_vectors = {user_name: user.vector for user_name, user in users.items()}
     with open(user_file, 'wb') as f:
-        pickle.dump(user_vectors, f)
+        pickle.dump(users, f)
 
     with open(item_file, 'wb') as f:
         pickle.dump(item_vector, f)
@@ -371,6 +371,7 @@ class User:
                 self.vector = np.zeros(vector_dim)  # Default vector initialization if no department/age
         else:
             # Load existing user data
+            print(f"User {name} already exists. Loading existing data.")
             self.name = name
             self.vector = user_vectors[name].vector
             self.department = user_vectors[name].department
