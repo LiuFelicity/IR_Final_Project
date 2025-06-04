@@ -185,7 +185,6 @@ cython_debug/
 .DS_Store
 grep/**/*.html
 activity_data_text/
-users.json
 *.npz
 
 CLCRec/runs

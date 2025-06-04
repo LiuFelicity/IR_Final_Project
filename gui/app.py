@@ -1,8 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for
 import os
-import random
-import json
-import numpy as np
 import sys
 
 # Add the parent directory to the Python path to ensure the method2 module can be imported.
