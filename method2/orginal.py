@@ -311,12 +311,13 @@ class User:
     """
     def __init__(self, name, vector_dim=100, department=None, age=None):
         self.name = name
-        self.vector = np.zeros(vector_dim)
+        # self.vector = np.zeros(vector_dim)
         self.onehot = np.zeros(len(DEPARTMENTS_OPTIONS) + len(AGES_OPTIONS))
         if department in DEPARTMENTS_OPTIONS:
             self.onehot[DEPARTMENTS_OPTIONS.index(department)] = 1
         if age in AGES_OPTIONS:
             self.onehot[len(DEPARTMENTS_OPTIONS) + AGES_OPTIONS.index(age)] = 1
+        self.vector = self.onehot.copy()  # Initialize vector with one-hot encoding
         add_user(name, vector_dim=vector_dim)
 
     def recommend(self, user_name, user_file=os.path.join(os.path.dirname(__file__),'user_vectors.pkl'), item_file=os.path.join(os.path.dirname(__file__),'item_vectors.pkl'), top_k=5):
