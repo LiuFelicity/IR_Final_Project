@@ -194,6 +194,8 @@ def load_vectors(user_file=os.path.join(os.path.dirname(__file__),'user_vectors.
     user_file = os.path.join(os.path.dirname(__file__), user_file)
     item_file = os.path.join(os.path.dirname(__file__), item_file)
     file_to_vector_file = os.path.join(os.path.dirname(__file__), file_to_vector_file)
+    M_file = os.path.join(os.path.dirname(__file__), 'matrix_M.pkl')
+    b_file = os.path.join(os.path.dirname(__file__), 'vector_b.pkl')
 
     with open(user_file, 'rb') as f:
         user_vectors = pickle.load(f)
@@ -204,11 +206,15 @@ def load_vectors(user_file=os.path.join(os.path.dirname(__file__),'user_vectors.
     with open(file_to_vector_file, 'rb') as f:
         file_to_vector = pickle.load(f)
 
+    with open(M_file, 'rb') as f:
+        M = pickle.load(f)
+    with open(b_file, 'rb') as f:
+        b = pickle.load(f)
     # print(f"User vectors loaded from {user_file}")
     # print(f"Item vectors loaded from {item_file}")
     # print(f"File-to-vector mapping loaded from {file_to_vector_file}")
 
-    return user_vectors, item_vector, file_to_vector
+    return user_vectors, item_vector, file_to_vector, M, b
 
 def BPR_gradient(rate=0.01, iterations=30, train_num=4000, lam=0.009, user_scores=None, file_to_vector=None, users=None, item_vector=None, item_vector_original=None, lambda_tfidf=0, M = None, b = None, lambda_user = 0):
         """
@@ -336,7 +342,7 @@ class User:
     def __init__(self, name, vector_dim=100, department = None, age = None):
         user_file=os.path.join(os.path.dirname(__file__), 'user_vectors.pkl')
         try:
-            user_vectors, _, _ = load_vectors()
+            user_vectors, _, _, M, b = load_vectors()
         except FileNotFoundError:
             user_vectors = {}
         
@@ -375,7 +381,7 @@ class User:
 
         user_name = self.name
         # Reload vectors
-        user_vectors, item_vector, file_to_vector = load_vectors(user_file, item_file)
+        user_vectors, item_vector, file_to_vector, _, _ = load_vectors(user_file, item_file)
         
         if user_name not in user_vectors:
             print(f"User {user_name} not found.")
@@ -419,7 +425,7 @@ class User:
         user_rating_file = os.path.join(os.path.dirname(__file__), user_rating_file)
 
         # Reload vectors
-        user_vectors, item_vector, file_to_vector = load_vectors(user_file, item_file, file_to_vector_file)
+        user_vectors, item_vector, file_to_vector, M, b = load_vectors(user_file, item_file, file_to_vector_file)
 
         if user_name not in user_vectors:
             print(f"User {user_name} not found.")
