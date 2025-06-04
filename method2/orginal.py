@@ -589,6 +589,6 @@ if __name__ == '__main__':
             user_name= 1,
             top_k=5
         )
-        print(f"Top 5 recommendations for {"Felicity"}: {top_k_recommendations}")
+        print(f"Top 5 recommendations for Felicity: {top_k_recommendations}")
     end_time = time.time()
     print(f"Execution time: {end_time - start_time:.2f} sec")
