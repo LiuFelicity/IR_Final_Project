@@ -3,66 +3,14 @@ import os
 import random
 import json
 import numpy as np
+import sys
 
+# Add the parent directory to the Python path to ensure the method2 module can be imported.
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+from method2.orginal import User
+from constants import AGES_OPTIONS, DEPARTMENTS_OPTIONS
 # Define lists directly in app.py based on gen_user_profile.py
-AGES_OPTIONS = ['Freshman/Sophomore', 'Junior/Senior', 'Master', 'PhD']
-COUNTRIES_OPTIONS = ['Europe', 'America', 'Asia']
-DEPARTMENTS_OPTIONS = [
-    'Department of Chinese Literature',
-    'Department of Foreign Languages and Literatures',
-    'Department of History',
-    'Department of Philosophy',
-    'Department of Anthropology',
-    'Department of Library and Information Science',
-    'Department of Japanese Language and Literature',
-    'Department of Drama and Theatre',
-    'Department of Mathematics',
-    'Department of Physics',
-    'Department of Chemistry',
-    'Department of Geosciences',
-    'Department of Psychology',
-    'Department of Geography',
-    'Department of Atmospheric Sciences',
-    'Department of Political Science',
-    'Department of Economics',
-    'Department of Sociology',
-    'Department of Social Work',
-    'Department of Medicine',
-    'Department of Dentistry',
-    'Department of Pharmacy',
-    'Department of Clinical Laboratory Sciences and Medical Biotechnology',
-    'Department of Nursing',
-    'Department of Physical Therapy',
-    'Department of Occupational Therapy',
-    'Department of Civil Engineering',
-    'Department of Mechanical Engineering',
-    'Department of Chemical Engineering',
-    'Department of Engineering Science and Ocean Engineering',
-    'Department of Materials Science and Engineering',
-    'Department of Agronomy',
-    'Department of Bioenvironmental Systems Engineering',
-    'Department of Agricultural Chemistry',
-    'Department of Forestry and Resource Conservation',
-    'Department of Animal Science and Technology',
-    'Department of Agricultural Economics',
-    'Department of Horticultural Science',
-    'Department of Veterinary Medicine',
-    'Department of Bio-Industry Communication and Development',
-    'Department of Bio-industrial Mechatronics Engineering',
-    'Department of Entomology',
-    'Department of Plant Pathology and Microbiology',
-    'Department of Business Administration',
-    'Department of Accounting',
-    'Department of Finance',
-    'Department of International Business',
-    'Department of Information Management',
-    'Department of Public Health',
-    'Department of Electrical Engineering',
-    'Department of Computer Science and Information Engineering',
-    'Department of Law',
-    'Department of Life Science',
-    'Department of Biochemical Science and Technology'
-]
+
 
 app = Flask(__name__) # templates are now in ./templates relative to this app.py
 
@@ -162,7 +110,6 @@ def create_profile(user_name):
                 'name': user_name,
                 'age': request.form['age'],
                 'department': request.form['department'],
-                'country': request.form['country'],
                 'ratings': {}
             }
             save_users(users)
@@ -171,8 +118,7 @@ def create_profile(user_name):
     return render_template('profile.html',
                            user_name=user_name,
                            age_options=AGES_OPTIONS,
-                           department_options=DEPARTMENTS_OPTIONS,
-                           country_options=COUNTRIES_OPTIONS)
+                           department_options=DEPARTMENTS_OPTIONS)
 
 @app.route('/recommendations/<user_name>', methods=['GET', 'POST'])
 def recommendations(user_name):
@@ -193,16 +139,24 @@ def recommendations(user_name):
                     print(f"Warning: Invalid rating value for {activity_id}: {value}")
         users[user_name]['ratings'] = current_user_ratings
         save_users(users)
+
+        # Update the dataset after user submits their ratings
+        user_instance = User(name=user_name)
+
+        # Ensure activity IDs do not include the .txt suffix before calling update_user_scores
+        cleaned_ratings = {key.replace('.txt', ''): value for key, value in current_user_ratings.items()}
+        user_instance.update_user_scores(cleaned_ratings)
+
         return redirect(url_for('thank_you', user_name=user_name))
 
     if not all_activity_filenames:
         return "Error: No activities loaded. Please check activity data files (e.g., grep/doc_data_lsi.npz).", 500
 
-    num_to_recommend = 10
-    sample_size = min(num_to_recommend, len(all_activity_filenames))
-    recommended_filenames = random.sample(all_activity_filenames, sample_size) if sample_size > 0 else []
-    
-    recommended_activities = [get_activity_details(fname) for fname in recommended_filenames]
+    # Obtain recommendations for the user
+    user_instance = User(name=user_name)
+    recommended_items = user_instance.recommend(user_name=user_name, top_k=10)
+    print(f"Recommended items for {user_name}: {recommended_items}")
+    recommended_activities = [get_activity_details(item+".txt") for item in recommended_items]
     user_ratings = users[user_name].get('ratings', {})
 
     return render_template('recommendations.html',
@@ -241,7 +195,6 @@ if __name__ == '__main__':
 <h1>Profile for {{ user_name }}</h1><form method="post">
 <label for="age">Age:</label><select name="age" required>{% for o in age_options %}<option value="{{o}}">{{o}}</option>{% endfor %}</select><br>
 <label for="department">Dept:</label><select name="department" required>{% for o in department_options %}<option value="{{o}}">{{o}}</option>{% endfor %}</select><br>
-<label for="country">Country:</label><select name="country" required>{% for o in country_options %}<option value="{{o}}">{{o}}</option>{% endfor %}</select><br>
 <button type="submit">Save</button></form></body></html>''',
         "recommendations.html": '''
 <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Rate</title></head><body>

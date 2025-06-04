@@ -1,3 +1,5 @@
+.conda/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -185,3 +187,5 @@ grep/**/*.html
 activity_data_text/
 users.json
 *.npz
+
+CLCRec/runs

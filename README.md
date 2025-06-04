@@ -34,6 +34,9 @@ IR_Final_Project/
 │       ├── profile.html       # User profile creation page
 │       ├── recommendations.html # Activity rating page
 │       └── thank_you.html     # Thank you page
+|── method2/
+│   ├── assignment.py          # same as the assignment2, just cache
+│   ├── orginal.py             # you can run it to do bpr
 └── CLCRec/
     ├── ...                    # Sub-project for Contrastive Learning for Cold-start Recommendation
 ```
@@ -63,6 +66,10 @@ IR_Final_Project/
     -   Run `grep/activity_html.py` to download each opportunity's detail HTML into `grep/activity_data/`.
     ```bash
     python grep/activity_html.py
+    ```
+    - If you want all data of train miss
+    ```bash
+    python grep/fetch_missing_activities.py
     ```
 
 5.  **Step 4: Extract main content**
@@ -122,6 +129,17 @@ The GUI allows new users to:
 *   Create a profile by specifying their age group, department, and country of interest.
 *   Receive and rate a selection of 10 randomly presented activities.
 User profiles and their ratings are stored in `gui/users.json`.
+
+## method2
+In this part, we want to use bpr, make sure you already do fetch_missing_activities.py and content.py.
+- If you want to run **original** BPR
+```bash
+python orginal.py -m original
+```
+- If you want to run **item cold start** BPR
+```bash
+python orginal.py -m item_cold_start
+```
 
 ## Notes
 -   All scripts are written in Python and primarily use `requests` and `BeautifulSoup` for web scraping and parsing, and `numpy` for numerical operations.
