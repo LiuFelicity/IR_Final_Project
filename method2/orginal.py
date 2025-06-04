@@ -345,7 +345,7 @@ class User:
         try:
             user_vectors, _, _, M, b = load_vectors()
         except FileNotFoundError:
-            print(f"User vectors file {user_file} not found. Initializing empty user vectors.")
+            # print(f"User vectors file {user_file} not found. Initializing empty user vectors.")
             M = np.zeros((100, len(DEPARTMENTS_OPTIONS) + len(AGES_OPTIONS)))
             b = np.zeros(100)
             user_vectors = {}
@@ -417,7 +417,7 @@ class User:
 
         return top_items
     
-    def update_user_scores(self, item_scores, vector_dim=100, user_file=os.path.join(os.path.dirname(__file__),'user_vectors.pkl'), item_file=os.path.join(os.path.dirname(__file__),'item_vectors.pkl'), file_to_vector_file=os.path.join(os.path.dirname(__file__),'file_to_vector.pkl'), user_rating_file=os.path.join(os.path.dirname(__file__),'user_ratings.jsonl')):
+    def update_user_scores(self, item_scores, iterations = 10, rate = 0.05, lam = 0.09, lambda_user = 0.1, vector_dim=100, user_file=os.path.join(os.path.dirname(__file__),'user_vectors.pkl'), item_file=os.path.join(os.path.dirname(__file__),'item_vectors.pkl'), file_to_vector_file=os.path.join(os.path.dirname(__file__),'file_to_vector.pkl'), user_rating_file=os.path.join(os.path.dirname(__file__),'user_ratings.jsonl')):
         """
         Update the user vector based on multiple scores for specific items and save the updated ratings to a JSONL file.
 
@@ -446,7 +446,7 @@ class User:
             print(f"User {user_name} not found.")
             return
 
-        user_vec = user_vectors[user_name]
+        user_vec = user_vectors[user_name].vector
 
         # Load existing ratings if the file exists
         existing_ratings = {}
@@ -462,7 +462,7 @@ class User:
             if item_name.lower() not in file_to_vector:
                 print(f"Item {item_name} not found. Skipping.")
                 continue
-            
+            updated_ratings[item_name] = score
         # Save updated user vectors
         with open(user_file, 'wb') as f:
             pickle.dump(user_vectors, f)
@@ -474,7 +474,58 @@ class User:
                 json.dump({'user': user, 'rec': rec}, f)
                 f.write('\n')
 
+        
+        # for _ in range(10):
+        #     for item
+        #     tmp = 1 - sigma(np.dot(user.vector, high_item_vec) - np.dot(user.vector, low_item_vec))
+        #     user.vector += rate * (np.dot(tmp, (high_item_vec - low_item_vec)) - 2 * lam * user.vector - 2 * lambda_user * ( user.vector - (M @ user.onehot.transpose() + b)))
         print(f"User {user_name}'s vector and ratings updated with items and scores: {item_scores}.")
+
+        # Load user ratings
+        user_ratings = {}
+        if os.path.exists(user_rating_file):
+            with open(user_rating_file, 'r', encoding='utf-8') as f:
+                for line in f:
+                    data = json.loads(line)
+                    if data['user'] == user_name:
+                        user_ratings = data['rec']
+                        break
+
+        if not user_ratings:
+            print(f"No ratings found for user {user_name}.")
+            return
+
+        # Pair-wise comparisons for BPR-like updates
+        items = list(user_ratings.keys())
+        for _ in range(iterations):
+            for i in range(len(items)):
+                for j in range(len(items)):
+                    if i == j:
+                        continue
+
+                    item1, score1 = items[i], user_ratings[items[i]]
+                    item2, score2 = items[j], user_ratings[items[j]]
+
+                    if item1.lower() not in file_to_vector or item2.lower() not in file_to_vector:
+                        print(f"Items {item1} or {item2} not found in file_to_vector. Skipping.")
+                        continue
+
+                    item1_vec = item_vector[file_to_vector[item1.lower()]]
+                    item2_vec = item_vector[file_to_vector[item2.lower()]]
+
+                    if score1 > score2:
+                        high_item_vec, low_item_vec = item1_vec, item2_vec
+                    else:
+                        high_item_vec, low_item_vec = item2_vec, item1_vec
+
+                    # Update user vector
+                    tmp = 1 - sigma(np.dot(user_vec, high_item_vec) - np.dot(user_vec, low_item_vec))
+                    user_vec += rate * (np.dot(tmp, (high_item_vec - low_item_vec)) - 2 * lam * user_vec - 2 * lambda_user * ( user_vec - (M @ user_vectors[user_name].onehot.transpose() + b)))
+
+        # Save updated user vector
+        user_vectors[user_name].vector = user_vec
+        with open(user_file, 'wb') as f:
+            pickle.dump(user_vectors, f)
 
 
 if __name__ == '__main__':
@@ -529,7 +580,7 @@ if __name__ == '__main__':
             lambda_tfidf=0.001,  # 只針對 item_cold_start 模型
             M = M,
             b = b,
-            lambda_user = 0.001
+            lambda_user = 0.1
         )
     elif model == "recommandation":
         #recommand for 1
