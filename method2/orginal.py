@@ -78,35 +78,35 @@ def load_and_copy_item_vectors():
 
     return X_lsi, X_lsi.copy(), file_to_index
 
-def add_user(user_name, vector_dim=100, user_file=os.path.join(os.path.dirname(__file__),'user_vectors.pkl')):
-    """
-    Add and initialize a new user, automatically loading and saving the users dictionary.
+# def add_user(user_name, vector_dim=100, user_file=os.path.join(os.path.dirname(__file__),'user_vectors.pkl')):
+#     """
+#     Add and initialize a new user, automatically loading and saving the users dictionary.
 
-    Args:
-        user_name (str): The name of the user to add.
-        vector_dim (int): Dimension of the user vector.
-        user_file (str): File path to load and save user vectors (default: 'user_vectors.pkl').
+#     Args:
+#         user_name (str): The name of the user to add.
+#         vector_dim (int): Dimension of the user vector.
+#         user_file (str): File path to load and save user vectors (default: 'user_vectors.pkl').
 
-    Returns:
-        User: The newly created User instance.
-    """
-    user_file = os.path.join(os.path.dirname(__file__), user_file)
-    # Load existing users
-    try:
-        user_vectors, _, _ = load_vectors(user_file=user_file)
-    except FileNotFoundError:
-        user_vectors = {}
+#     Returns:
+#         User: The newly created User instance.
+#     """
+#     # user_file = os.path.join(os.path.dirname(__file__), user_file)
+#     # Load existing users
+#     try:
+#         user_vectors, _, _ = load_vectors(user_file=user_file)
+#     except FileNotFoundError:
+#         user_vectors = {}
 
-    # Add the user if not already present
-    if user_name not in user_vectors:
-        user_vectors[user_name] = np.zeros(vector_dim)
+#     # Add the user if not already present
+#     if user_name not in user_vectors:
+#         user_vectors[user_name] = User(name=user_name, vector_dim=vector_dim)
 
-    # Save updated users
-    with open(user_file, 'wb') as f:
-        pickle.dump(user_vectors, f)
+#     # Save updated users
+#     with open(user_file, 'wb') as f:
+#         pickle.dump(user_vectors, f)
 
-    # print(f"User {user_name} added and saved to {user_file}")
-    return user_vectors[user_name]
+#     # print(f"User {user_name} added and saved to {user_file}")
+#     return user_vectors[user_name]
 
 def initialize_users(user_scores, vector_dim=100, train_num=4000):
     """
@@ -309,17 +309,30 @@ class User:
         name (str): The name of the user.
         vector (np.ndarray): The vector representing the user.
     """
-    def __init__(self, name, vector_dim=100, department=None, age=None):
-        self.name = name
-        # self.vector = np.zeros(vector_dim)
-        self.onehot = np.zeros(len(DEPARTMENTS_OPTIONS) + len(AGES_OPTIONS))
-        if department in DEPARTMENTS_OPTIONS:
-            self.onehot[DEPARTMENTS_OPTIONS.index(department)] = 1
-        if age in AGES_OPTIONS:
-            self.onehot[len(DEPARTMENTS_OPTIONS) + AGES_OPTIONS.index(age)] = 1
-        self.vector = self.onehot.copy()  # Initialize vector with one-hot encoding
-        add_user(name, vector_dim=vector_dim)
-
+    def __init__(self, name, vector_dim=100, department = None, age = None):
+        user_file=os.path.join(os.path.dirname(__file__))
+        try:
+            user_vectors, _, _ = load_vectors(user_file,'user_vectors.pkl')
+        except FileNotFoundError:
+            user_vectors = {}
+        
+        if name not in user_vectors:
+            self.name = name
+            self.department = department
+            self.age = age
+            if department is not None:
+                self.onehot = np.zeros(len(DEPARTMENTS_OPTIONS) + len(AGES_OPTIONS))
+                if department in DEPARTMENTS_OPTIONS:
+                    self.onehot[DEPARTMENTS_OPTIONS.index(department)] = 1
+                if age in AGES_OPTIONS:
+                    self.onehot[len(DEPARTMENTS_OPTIONS) + AGES_OPTIONS.index(age)] = 1
+                self.vector = self.onehot.copy()  # Initialize vector with one-hot encoding
+                # Save updated users
+                with open(user_file, 'wb') as f:
+                    pickle.dump(user_vectors, f)
+                # print(f"User {user_name} added and saved to {user_file}")
+                return user_vectors[name]
+    
     def recommend(self, user_name, user_file=os.path.join(os.path.dirname(__file__),'user_vectors.pkl'), item_file=os.path.join(os.path.dirname(__file__),'item_vectors.pkl'), top_k=5):
         """
         Recommend items for a given user based on inner product. Reload vectors before recommending.
@@ -473,9 +486,9 @@ if __name__ == '__main__':
         )
     elif model == "recommandation":
         #recommand for 1
-        add_user(user_name='Felicity')
+        # add_user(user_name='Felicity')
         top_k_recommendations = User.recommend(
-            user_name="Felicity",
+            user_name= 1,
             top_k=5
         )
         print(f"Top 5 recommendations for {"Felicity"}: {top_k_recommendations}")
