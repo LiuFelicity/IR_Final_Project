@@ -345,7 +345,7 @@ class User:
         try:
             user_vectors, _, _, M, b = load_vectors()
         except FileNotFoundError:
-            print(f"User vectors file {user_file} not found. Initializing empty user vectors.")
+            # print(f"User vectors file {user_file} not found. Initializing empty user vectors.")
             M = np.zeros((100, len(DEPARTMENTS_OPTIONS) + len(AGES_OPTIONS)))
             b = np.zeros(100)
             user_vectors = {}
@@ -462,7 +462,7 @@ class User:
             if item_name.lower() not in file_to_vector:
                 print(f"Item {item_name} not found. Skipping.")
                 continue
-            
+            updated_ratings[item_name] = score
         # Save updated user vectors
         with open(user_file, 'wb') as f:
             pickle.dump(user_vectors, f)
@@ -529,7 +529,7 @@ if __name__ == '__main__':
             lambda_tfidf=0.001,  # 只針對 item_cold_start 模型
             M = M,
             b = b,
-            lambda_user = 0.001
+            lambda_user = 0.1
         )
     elif model == "recommandation":
         #recommand for 1
