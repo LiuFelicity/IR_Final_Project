@@ -271,7 +271,8 @@ def BPR_gradient(rate=0.01, iterations=30, train_num=4000, lam=0.009, user_score
                     high_item_vec += rate * (tmp * user.vector - 2 * lam * high_item_vec - 2 * lambda_tfidf * (high_item_vec - item_vector_original[high_item_idx]))
                     low_item_vec += rate * (-tmp * user.vector - 2 * lam * low_item_vec - 2 * lambda_tfidf * (low_item_vec - item_vector_original[low_item_idx]))
                     b -= rate * ( 2*lambda_user * (M @ user.onehot.transpose() + b - user.vector) + 2 * lam * b )
-
+                    M -= rate * (2 * lambda_user * ((M @ user.onehot.reshape(-1, 1)).flatten() + b - user.vector)[:, None] @ user.onehot[None, :] + 2 * lam * M)
+                    # M -= rate * ( 2*lambda_user * (M @ user.onehot.transpose() + b - user.vector) @ user.onehot + 2 * lam * M )
                 except KeyError as e:
                     missing_items.append(str(e))
                     continue
@@ -344,6 +345,7 @@ class User:
         try:
             user_vectors, _, _, M, b = load_vectors()
         except FileNotFoundError:
+            print(f"User vectors file {user_file} not found. Initializing empty user vectors.")
             M = np.zeros((100, len(DEPARTMENTS_OPTIONS) + len(AGES_OPTIONS)))
             b = np.zeros(100)
             user_vectors = {}
@@ -392,13 +394,15 @@ class User:
 
         user_name = self.name
         # Reload vectors
-        user_vectors, item_vector, file_to_vector, _, _ = load_vectors(user_file, item_file)
-        
+        user_vectors, item_vector, file_to_vector, M, b = load_vectors(user_file, item_file)
+        # print(M)
+        # print(b)
         if user_name not in user_vectors:
             print(f"User {user_name} not found.")
             return []
 
         user_vec = user_vectors[user_name].vector
+        # print(user_vec)
         scores = np.dot(item_vector, user_vec)  # 計算內積
         # load user interaction, and remove items that the user has already interacted with by setting their scores to -inf
         if os.path.exists(os.path.join(os.path.dirname(__file__),'user_ratings.jsonl')):
@@ -502,7 +506,8 @@ if __name__ == '__main__':
             item_vector_original=item_vector_original,
             lambda_tfidf=0,  # 只針對 item_cold_start 模型
             M = M,
-            b = b
+            b = b,
+            lambda_user = 0
         )
 
     elif model == "item_cold_start":
@@ -523,7 +528,8 @@ if __name__ == '__main__':
             item_vector_original=item_vector_original,
             lambda_tfidf=0.001,  # 只針對 item_cold_start 模型
             M = M,
-            b = b
+            b = b,
+            lambda_user = 0.001
         )
     elif model == "recommandation":
         #recommand for 1
