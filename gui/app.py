@@ -108,7 +108,7 @@ def recommendations(user_name):
 
     # Obtain recommendations for the user
     user_instance = User(name=user_name)
-    recommended_items = user_instance.recommend(user_name=user_name, top_k=10)
+    recommended_items = user_instance.recommend(user_name=user_name, top_k=5)
     print(f"Recommended items for {user_name}: {recommended_items}")
     recommended_activities = [get_activity_details(item+".txt") for item in recommended_items]
 
