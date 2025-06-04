@@ -67,7 +67,7 @@ for filename in os.listdir(input_folder):
             content_texts.append(text)
 
     # 組合完整內容
-    full_text = f"Title: {title}\n\n"
+    full_text = title + "\n\n"
     if extra_info:
         full_text += " / ".join(extra_info) + "\n\n"
     full_text += "\n\n".join(content_texts)
