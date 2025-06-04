@@ -7,12 +7,7 @@ charset-normalizer==3.4.2
 filelock==3.18.0
 Flask==3.1.1
 fsspec==2025.5.1
-google-ai-generativelanguage==0.6.15
-google-api-core==2.25.0rc1
-google-api-python-client==2.170.0
-google-auth==2.40.2
-google-auth-httplib2==0.2.0
-google-generativeai==0.8.5
+google-generativeai
 googleapis-common-protos==1.70.0
 grpcio==1.71.0
 grpcio-status==1.71.0
@@ -34,6 +29,7 @@ pyasn1_modules==0.4.2
 pydantic==2.11.5
 pydantic_core==2.33.2
 pyparsing==3.2.3
+python-dotenv
 requests==2.32.3
 rsa==4.9.1
 scikit-learn==1.6.1
@@ -45,9 +41,6 @@ sympy==1.14.0
 tensorboard==2.19.0
 tensorboard-data-server==0.7.2
 threadpoolctl==3.6.0
-torch==2.7.0
-torch_scatter==2.1.2
-torchvision==0.22.0
 tqdm==4.67.1
 typing-inspection==0.4.1
 typing_extensions==4.13.2

@@ -5,9 +5,9 @@ import time
 import random
 
 # File paths
-user_scores_file = "train_data/user_scores.jsonl"
-activity_data_text_folder = "activity_data_text"
-activity_data_folder = "activity_data"
+user_scores_file = "grep/train_data/user_scores.jsonl"
+activity_data_text_folder = "grep/activity_data_text"
+activity_data_folder = "grep/activity_data"
 base_url = "https://www.opportunitiescircle.com/"
 
 # Ensure output folder exists
