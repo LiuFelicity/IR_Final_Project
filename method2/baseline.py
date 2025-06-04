@@ -160,9 +160,9 @@ def save_vectors(users, item_vector, file_to_vector, M, b, user_file=os.path.joi
         item_file (str): File path to save item vectors (default: 'item_vectors.pkl').
         file_to_vector_file (str): File path to save file_to_vector (default: 'file_to_vector.pkl').
     """
-    user_vectors = {user_name: user.vector for user_name, user in users.items()}
+    # user_vectors = {user_name: user.vector for user_name, user in users.items()}
     with open(user_file, 'wb') as f:
-        pickle.dump(user_vectors, f)
+        pickle.dump(users, f)
 
     with open(item_file, 'wb') as f:
         pickle.dump(item_vector, f)
@@ -361,7 +361,7 @@ class User:
                 if age in AGES_OPTIONS:
                     self.onehot[len(DEPARTMENTS_OPTIONS) + AGES_OPTIONS.index(age)] = 1
                 if test:
-                    self.vector = np.mean([user_vectors[user] for user in user_vectors], axis=0)
+                    self.vector = np.mean([user_vectors[user].vector for user in user_vectors], axis=0)
                 else:
                     self.vector = np.zeros(vector_dim)  # Default vector initialization if no department/age
 
@@ -409,8 +409,8 @@ class User:
         # print(user_vec)
         scores = np.dot(item_vector, user_vec)  # 計算內積
         # load user interaction, and remove items that the user has already interacted with by setting their scores to -inf
-        if os.path.exists(os.path.join(os.path.dirname(__file__),'user_ratings.jsonl')):
-            user_scores = load_user_scores(os.path.join(os.path.dirname(__file__),'user_ratings.jsonl'))
+        if os.path.exists(os.path.join(os.path.dirname(__file__),'baseline_user_ratings.jsonl')):
+            user_scores = load_user_scores(os.path.join(os.path.dirname(__file__),'baseline_user_ratings.jsonl'))
             interacted_items = {item.lower() for item, _ in user_scores.get(user_name, [])}
             for item in interacted_items:
                 if item.lower() in file_to_vector:
@@ -421,7 +421,7 @@ class User:
 
         return top_items
     
-    def update_user_scores(self, item_scores, iterations = 10, rate = 0.05, lam = 0.09, lambda_user = 0, vector_dim=100, user_file=os.path.join(os.path.dirname(__file__),'baseline_user_vectors.pkl'), item_file=os.path.join(os.path.dirname(__file__),'baseline_item_vectors.pkl'), file_to_vector_file=os.path.join(os.path.dirname(__file__),'baseline_file_to_vector.pkl'), user_rating_file=os.path.join(os.path.dirname(__file__),'user_ratings.jsonl')):
+    def update_user_scores(self, item_scores, iterations = 10, rate = 0.05, lam = 0.09, lambda_user = 0, vector_dim=100, user_file=os.path.join(os.path.dirname(__file__),'baseline_user_vectors.pkl'), item_file=os.path.join(os.path.dirname(__file__),'baseline_item_vectors.pkl'), file_to_vector_file=os.path.join(os.path.dirname(__file__),'baseline_file_to_vector.pkl'), user_rating_file=os.path.join(os.path.dirname(__file__),'baseline_user_ratings.jsonl')):
         """
         Update the user vector based on multiple scores for specific items and save the updated ratings to a JSONL file.
 
@@ -432,7 +432,7 @@ class User:
             user_file (str): File path to load user vectors (default: 'user_vectors.pkl').
             item_file (str): File path to load item vectors (default: 'item_vectors.pkl').
             file_to_vector_file (str): File path to load file-to-vector mapping (default: 'file_to_vector.pkl').
-            user_rating_file (str): File path to save user ratings (default: 'user_ratings.jsonl').
+            user_rating_file (str): File path to save user ratings (default: 'baseline_user_ratings.jsonl').
 
         Returns:
             None
