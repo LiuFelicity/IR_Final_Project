@@ -73,9 +73,9 @@ def index():
 @app.route('/create_profile/<user_name>', methods=['GET', 'POST'])
 def create_profile(user_name):
     if request.method == 'POST':
-        user = User(username=user_name)
+        user = User(name=user_name)
         if user.department is None:
-            user.__init__(username=user_name, age=request.form['age'], department=request.form['department'])
+            user.__init__(name=user_name, age=request.form['age'], department=request.form['department'])
         return redirect(url_for('recommendations', user_name=user_name, existing_user='no'))
 
     return render_template('profile.html',
