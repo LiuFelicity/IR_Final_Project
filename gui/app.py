@@ -119,7 +119,7 @@ def recommendations(user_name):
                            user_name=user_name,
                            activities=recommended_activities,
                            existing_user=is_existing_user,
-                           user_ratings=None)
+                           user_ratings={})
 
 @app.route('/thank_you/<user_name>')
 def thank_you(user_name):
