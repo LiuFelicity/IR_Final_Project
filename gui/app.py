@@ -142,7 +142,10 @@ def recommendations(user_name):
 
         # Update the dataset after user submits their ratings
         user_instance = User(name=user_name)
-        user_instance.update_user_scores(user_name, current_user_ratings)
+
+        # Ensure activity IDs do not include the .txt suffix before calling update_user_scores
+        cleaned_ratings = {key.replace('.txt', ''): value for key, value in current_user_ratings.items()}
+        user_instance.update_user_scores(cleaned_ratings)
 
         return redirect(url_for('thank_you', user_name=user_name))
 
