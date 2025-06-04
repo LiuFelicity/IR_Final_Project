@@ -4,7 +4,7 @@ import sys
 
 # Add the parent directory to the Python path to ensure the method2 module can be imported.
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
-from method2.baseline import User
+from method2.orginal import User
 from constants import AGES_OPTIONS, DEPARTMENTS_OPTIONS
 # Define lists directly in app.py based on gen_user_profile.py
 
