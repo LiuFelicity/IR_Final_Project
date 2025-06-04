@@ -6,7 +6,7 @@ import numpy as np
 
 # Define lists directly in app.py based on gen_user_profile.py
 AGES_OPTIONS = ['Freshman/Sophomore', 'Junior/Senior', 'Master', 'PhD']
-DEPARTMENTS_OPTIONS = [
+DEPARTMENTS_OPTIONS = sorted([
     'Department of Chinese Literature',
     'Department of Foreign Languages and Literatures',
     'Department of History',
@@ -61,7 +61,7 @@ DEPARTMENTS_OPTIONS = [
     'Department of Law',
     'Department of Life Science',
     'Department of Biochemical Science and Technology'
-]
+])
 
 app = Flask(__name__) # templates are now in ./templates relative to this app.py
 
