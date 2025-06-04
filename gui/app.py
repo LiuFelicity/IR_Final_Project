@@ -19,24 +19,7 @@ app = Flask(__name__) # templates are now in ./templates relative to this app.py
 # Adjust these paths if the data files are located elsewhere relative to the new gui/app.py
 PARENT_DIR = os.path.dirname(os.path.dirname(__file__)) # Goes up to IR_Final_Project/
 GREP_DIR = os.path.join(PARENT_DIR, 'grep')
-
-ACTIVITIES_FILE = os.path.join(GREP_DIR, 'doc_data_lsi.npz')
 ACTIVITY_TEXT_DIR = os.path.join(GREP_DIR, 'activity_data_text')
-USERS_FILE = 'users.json' # This is now gui/users.json, local to app.py
-
-def load_activities():
-    """Loads activity file names from the .npz file."""
-    try:
-        data = np.load(ACTIVITIES_FILE, allow_pickle=True)
-        return list(data['file_names'])
-    except FileNotFoundError:
-        print(f"Error: Activities file not found at {ACTIVITIES_FILE}. Please ensure the path is correct.")
-        return []
-    except Exception as e:
-        print(f"Error loading activities: {e}")
-        return []
-
-all_activity_filenames = load_activities()
 
 def get_activity_details(filename):
     """Gets activity title, one line of content, and link."""
@@ -76,26 +59,12 @@ def get_activity_details(filename):
 
     return {'title': title, 'content': content_line, 'link': link, 'id': filename}
 
-def load_users():
-    if os.path.exists(USERS_FILE):
-        with open(USERS_FILE, 'r') as f:
-            try:
-                return json.load(f)
-            except json.JSONDecodeError:
-                print(f"Warning: {USERS_FILE} is empty or corrupted. Starting with an empty user list.")
-                return {}
-    return {}
-
-def save_users(users):
-    with open(USERS_FILE, 'w') as f:
-        json.dump(users, f, indent=4)
-
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
         user_name = request.form['name']
-        users = load_users()
-        if user_name in users:
+        user = User(name=user_name)
+        if user.department is not None:
             return redirect(url_for('recommendations', user_name=user_name, existing_user='yes'))
         else:
             return redirect(url_for('create_profile', user_name=user_name))
@@ -104,15 +73,9 @@ def index():
 @app.route('/create_profile/<user_name>', methods=['GET', 'POST'])
 def create_profile(user_name):
     if request.method == 'POST':
-        users = load_users()
-        if user_name not in users:
-            users[user_name] = {
-                'name': user_name,
-                'age': request.form['age'],
-                'department': request.form['department'],
-                'ratings': {}
-            }
-            save_users(users)
+        user = User(name=user_name)
+        if user.department is None:
+            user.__init__(name=user_name, age=request.form['age'], department=request.form['department'])
         return redirect(url_for('recommendations', user_name=user_name, existing_user='no'))
 
     return render_template('profile.html',
@@ -122,14 +85,13 @@ def create_profile(user_name):
 
 @app.route('/recommendations/<user_name>', methods=['GET', 'POST'])
 def recommendations(user_name):
-    users = load_users()
-    if user_name not in users:
+    user = User(name=user_name)
+    if user.department is None:
         return redirect(url_for('index'))
 
     is_existing_user = request.args.get('existing_user', 'no').lower() == 'yes'
-
+    current_user_ratings = {}
     if request.method == 'POST':
-        current_user_ratings = users[user_name].get('ratings', {})
         for key, value in request.form.items():
             if key.startswith('rating_'):
                 activity_id = key.replace('rating_', '')
@@ -137,8 +99,6 @@ def recommendations(user_name):
                     current_user_ratings[activity_id] = int(value)
                 except ValueError:
                     print(f"Warning: Invalid rating value for {activity_id}: {value}")
-        users[user_name]['ratings'] = current_user_ratings
-        save_users(users)
 
         # Update the dataset after user submits their ratings
         user_instance = User(name=user_name)
@@ -149,21 +109,17 @@ def recommendations(user_name):
 
         return redirect(url_for('thank_you', user_name=user_name))
 
-    if not all_activity_filenames:
-        return "Error: No activities loaded. Please check activity data files (e.g., grep/doc_data_lsi.npz).", 500
-
     # Obtain recommendations for the user
     user_instance = User(name=user_name)
     recommended_items = user_instance.recommend(user_name=user_name, top_k=10)
     print(f"Recommended items for {user_name}: {recommended_items}")
     recommended_activities = [get_activity_details(item+".txt") for item in recommended_items]
-    user_ratings = users[user_name].get('ratings', {})
 
     return render_template('recommendations.html',
                            user_name=user_name,
                            activities=recommended_activities,
                            existing_user=is_existing_user,
-                           user_ratings=user_ratings)
+                           user_ratings=None)
 
 @app.route('/thank_you/<user_name>')
 def thank_you(user_name):
@@ -214,12 +170,5 @@ Rating: <input type="number" name="rating_{{act.id}}" min="1" max="5" value="{{ 
              with open(f_path, 'w', encoding='utf-8') as f:
                 f.write(f_content)
                 print(f"Created basic template: {f_path}")
-
-    # Check if essential data files exist before running
-    if not os.path.exists(ACTIVITIES_FILE):
-        print(f"CRITICAL ERROR: ACTIVITIES_FILE not found at {ACTIVITIES_FILE}. The application cannot run without it.")
-        print("Please ensure 'doc_data_lsi.npz' is in the 'grep' directory.")
-    elif not all_activity_filenames:
-        print(f"WARNING: No activities loaded from {ACTIVITIES_FILE}. Recommendations will be empty.")
     
     app.run(debug=True, host='0.0.0.0', port=5001)

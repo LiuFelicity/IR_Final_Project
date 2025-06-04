@@ -108,20 +108,44 @@ def load_and_copy_item_vectors():
 #     # print(f"User {user_name} added and saved to {user_file}")
 #     return user_vectors[user_name]
 
-def initialize_users(user_scores, vector_dim=100, train_num=4000):
+def initialize_users(user_scores, vector_dim=100, train_num=4000, profile_file=os.path.join(os.path.dirname(__file__), '../grep/train_data/pseudo_user_profiles.json')):
     """
-    Initialize users as instances of the User class.
+    Initialize users as instances of the User class, with additional attributes from pseudo_user_profiles.json.
 
     Args:
         user_scores (dict): User scores in the format {user_name: [(item, score), ...]}.
         vector_dim (int): Dimension of the user vector.
+        train_num (int): Number of users to initialize.
+        profile_file (str): Path to the pseudo_user_profiles.json file.
 
     Returns:
         dict: A dictionary where keys are user names and values are User instances.
     """
     users = {}
+
+    # Load user profiles from pseudo_user_profiles.json
+    try:
+        with open(profile_file, 'r', encoding='utf-8') as f:
+            user_profiles = {str(profile["id"]): profile for profile in json.load(f)}
+    except FileNotFoundError:
+        print(f"Profile file {profile_file} not found. Proceeding without additional attributes.")
+        user_profiles = {}
+
+    # Initialize users
     for user_name in list(user_scores.keys())[:train_num]:
-        users[user_name] = User(name=user_name, vector_dim=vector_dim)
+        department = None
+        age = None
+        # Get department and age from user profiles if available
+        user_name_str = str(user_name)
+        # Get department and age from user profiles if available
+        if user_name_str in user_profiles:
+            department = user_profiles[user_name_str].get("department")
+            age = user_profiles[user_name_str].get("age")
+        else:
+            print(f"User profile for {user_name} not found in {profile_file}. Using default values.")
+        # Create User instance
+        users[user_name] = User(name=user_name, vector_dim=vector_dim, department=department, age=age)
+
     return users
 
 def save_vectors(users, item_vector, file_to_vector, M, b, user_file=os.path.join(os.path.dirname(__file__),'user_vectors.pkl'), item_file=os.path.join(os.path.dirname(__file__),'item_vectors.pkl'), file_to_vector_file=os.path.join(os.path.dirname(__file__),'file_to_vector.pkl'), M_file = os.path.join(os.path.dirname(__file__),'matrix_M.pkl'), b_file = os.path.join(os.path.dirname(__file__),'vector_b.pkl')):
@@ -310,9 +334,9 @@ class User:
         vector (np.ndarray): The vector representing the user.
     """
     def __init__(self, name, vector_dim=100, department = None, age = None):
-        user_file=os.path.join(os.path.dirname(__file__))
+        user_file=os.path.join(os.path.dirname(__file__), 'user_vectors.pkl')
         try:
-            user_vectors, _, _ = load_vectors(user_file,'user_vectors.pkl')
+            user_vectors, _, _ = load_vectors()
         except FileNotFoundError:
             user_vectors = {}
         
@@ -326,12 +350,12 @@ class User:
                     self.onehot[DEPARTMENTS_OPTIONS.index(department)] = 1
                 if age in AGES_OPTIONS:
                     self.onehot[len(DEPARTMENTS_OPTIONS) + AGES_OPTIONS.index(age)] = 1
-                self.vector = self.onehot.copy()  # Initialize vector with one-hot encoding
+                self.vector = M @ self.onehot.transpose() + b # Initialize vector with one-hot encoding
                 # Save updated users
                 with open(user_file, 'wb') as f:
                     pickle.dump(user_vectors, f)
                 # print(f"User {user_name} added and saved to {user_file}")
-                return user_vectors[name]
+                # return user_vectors[name]
     
     def recommend(self, user_name, user_file=os.path.join(os.path.dirname(__file__),'user_vectors.pkl'), item_file=os.path.join(os.path.dirname(__file__),'item_vectors.pkl'), top_k=5):
         """
