@@ -570,34 +570,29 @@ class User:
 
 if __name__ == '__main__':
     start_time = time.time()
-    parser = argparse.ArgumentParser(description='IR Final Project')
-    parser.add_argument('-m', '--model', required=True)
-    args = parser.parse_args()
-    model = args.model
     np.random.seed(817)
 
     M = np.zeros((100, len(DEPARTMENTS_OPTIONS) + len(AGES_OPTIONS)))
     b = np.zeros(100)
-    if model == "baseline":
-        # 預處理
-        user_scores = load_user_scores(os.path.join(os.path.dirname(__file__), '../grep/train_data/user_scores.jsonl'))
-        users = initialize_users(user_scores, train_num=4000)  # 使用 User class 初始化
-        item_vector_original, item_vector_real, file_to_vector = load_and_copy_item_vectors()
-        # 訓練
-        BPR_gradient(
-            rate=0.01,
-            iterations=100,
-            train_num=4000,
-            lam=0.009,
-            user_scores=user_scores,
-            file_to_vector=file_to_vector,
-            users=users,
-            item_vector=item_vector_real,
-            item_vector_original=item_vector_original,
-            lambda_tfidf=0,  # 只針對 item_cold_start 模型
-            M = M,
-            b = b,
-            lambda_user = 0
-        )
+    # 預處理
+    user_scores = load_user_scores(os.path.join(os.path.dirname(__file__), '../grep/train_data/user_scores.jsonl'))
+    users = initialize_users(user_scores, train_num=4000)  # 使用 User class 初始化
+    item_vector_original, item_vector_real, file_to_vector = load_and_copy_item_vectors()
+    # 訓練
+    BPR_gradient(
+        rate=0.01,
+        iterations=100,
+        train_num=4000,
+        lam=0.009,
+        user_scores=user_scores,
+        file_to_vector=file_to_vector,
+        users=users,
+        item_vector=item_vector_real,
+        item_vector_original=item_vector_original,
+        lambda_tfidf=0,  # 只針對 item_cold_start 模型
+        M = M,
+        b = b,
+        lambda_user = 0
+    )
     end_time = time.time()
     print(f"Execution time: {end_time - start_time:.2f} sec")

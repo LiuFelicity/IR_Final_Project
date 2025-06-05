@@ -1,7 +1,9 @@
 import os
 import json
 import sys
-from scipy.stats import kendalltau
+from scipy.stats import kendalltau, rankdata
+import numpy as np
+# 加入上層目錄到 sys.path
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from method2.baseline import User, load_user_scores
 
@@ -27,19 +29,30 @@ for user_id, item_score_list in user_scores.items():
     department = profile.get("department")
     age = profile.get("age")
     print(f"Evaluating user {user_id} with department {department} and age {age}")
-    # user = User(name=user_id, department=department, age=age)
+
     user = User.load(name=user_id) if User.exists(user_id) else User(name=user_id, age=age, department=department)
+
     items = [item for item, _ in item_score_list]
     gt_scores = [score for _, score in item_score_list]
     pred_scores = [user.getscore(item) for item in items]
 
-    # Sort by ground truth (descending, 5 is best)
-    gt_rank = [x for _, x in sorted(zip(gt_scores, range(len(gt_scores))), reverse=True)]
-    # Sort by predicted score (descending)
-    pred_rank = [x for _, x in sorted(zip(pred_scores, range(len(pred_scores))), reverse=True)]
+    # 過濾掉 None 或 nan
+    if any(s is None or (isinstance(s, float) and np.isnan(s)) for s in pred_scores):
+        continue
+    # 全部分數一樣也跳過
+    if len(set(gt_scores)) == 1 or len(set(pred_scores)) == 1:
+        continue
 
-    # Compute Kendall's tau
+    # 使用 rankdata 正確處理同分，分數越高排名越前，所以加負號
+    gt_rank = rankdata([-s for s in gt_scores], method="average")
+    pred_rank = rankdata([-s for s in pred_scores], method="average")
+
     tau, _ = kendalltau(gt_rank, pred_rank)
-    taus.append(tau)
+    if tau is not None and not np.isnan(tau):
+        taus.append(tau)
 
-print(f"Average Kendall's tau: {sum(taus)/len(taus):.4f} over {len(taus)} users")
+# 平均 tau
+if taus:
+    print(f"Average Kendall's tau: {sum(taus)/len(taus):.4f} over {len(taus)} users")
+else:
+    print("No valid users to evaluate.")

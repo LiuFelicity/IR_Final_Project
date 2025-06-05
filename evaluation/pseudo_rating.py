@@ -18,7 +18,7 @@ import time
 from dotenv import load_dotenv
 # Add the parent directory to the Python path to ensure the method2 module can be imported.
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
-from method2.orginal import User
+from method2.cold_start_model import User
 from method2.baseline import User as BaseUser
 import google.generativeai as genai
 

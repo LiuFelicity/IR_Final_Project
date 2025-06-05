@@ -15,5 +15,5 @@ python content.py
 
 cd ..
 find . -name "*.pkl" -delete
-python method2/orginal.py -m item_cold_start
-python method2/baseline.py -m baseline
+python method2/cold_start_model.py
+python method2/baseline.py
