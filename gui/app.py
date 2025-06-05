@@ -60,7 +60,8 @@ def get_activity_details(filename):
 def index():
     if request.method == 'POST':
         user_name = request.form['name']
-        if User.exists(user_name):
+        user = User(name=user_name)
+        if user.department is not None:
             return redirect(url_for('recommendations', user_name=user_name, existing_user='yes'))
         else:
             return redirect(url_for('create_profile', user_name=user_name))
@@ -69,8 +70,9 @@ def index():
 @app.route('/create_profile/<user_name>', methods=['GET', 'POST'])
 def create_profile(user_name):
     if request.method == 'POST':
-        if not User.exists(user_name):
-            User(name=user_name, age=request.form['age'], department=request.form['department'])
+        user = User(name=user_name)
+        if user.department is None:
+            user.__init__(name=user_name, age=request.form['age'], department=request.form['department'])
         return redirect(url_for('recommendations', user_name=user_name, existing_user='no'))
 
     return render_template('profile.html',
@@ -80,7 +82,8 @@ def create_profile(user_name):
 
 @app.route('/recommendations/<user_name>', methods=['GET', 'POST'])
 def recommendations(user_name):
-    if not User.exists(user_name):
+    user = User(name=user_name)
+    if user.department is None:
         return redirect(url_for('index'))
 
     is_existing_user = request.args.get('existing_user', 'no').lower() == 'yes'
@@ -95,7 +98,7 @@ def recommendations(user_name):
                     print(f"Warning: Invalid rating value for {activity_id}: {value}")
 
         # Update the dataset after user submits their ratings
-        user_instance = User.load(name=user_name)
+        user_instance = User(name=user_name)
 
         # Ensure activity IDs do not include the .txt suffix before calling update_user_scores
         cleaned_ratings = {key.replace('.txt', ''): value for key, value in current_user_ratings.items()}
@@ -104,7 +107,7 @@ def recommendations(user_name):
         return redirect(url_for('thank_you', user_name=user_name))
 
     # Obtain recommendations for the user
-    user_instance = User.load(name=user_name)
+    user_instance = User(name=user_name)
     recommended_items = user_instance.recommend(user_name=user_name, top_k=5)
     print(f"Recommended items for {user_name}: {recommended_items}")
     recommended_activities = [get_activity_details(item+".txt") for item in recommended_items]
