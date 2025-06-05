@@ -386,7 +386,10 @@ class User:
         
     @staticmethod
     def exists(name):
-        user_vectors, _, _, _, _ = load_vectors()
+        try:
+            user_vectors, _, _, _, _ = load_vectors()
+        except FileNotFoundError:
+            return False
         return name in user_vectors
     
     def load(name):
