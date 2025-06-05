@@ -184,7 +184,7 @@ cython_debug/
 
 .DS_Store
 grep/**/*.html
-activity_data_text/
+grep/**/*.txt
 
 CLCRec/runs
 *.pkl
