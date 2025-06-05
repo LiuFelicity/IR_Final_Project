@@ -19,11 +19,11 @@ from dotenv import load_dotenv
 # Add the parent directory to the Python path to ensure the method2 module can be imported.
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from method2.orginal import User
-from method2.baseline_eval import BaseUser
+from method2.baseline import User as BaseUser
 import google.generativeai as genai
 
 load_dotenv()
-genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 model = genai.GenerativeModel('gemini-2.0-flash')
 
 ACTIVITY_DATA_PATH = os.path.join(os.path.dirname(__file__), "../grep/activity_data_text")
@@ -73,6 +73,7 @@ def evaluate_model(user_profile, user_instance):
     item_ratings = {item: rating for item, rating in zip(recommended_items, ratings)}
 
     # 4. Update user scores (like in app.py)
+    print(f"User {user_id} rated items: {item_ratings}")
     user_instance.update_user_scores(item_ratings)
 
     return item_ratings
@@ -85,25 +86,18 @@ def main():
     with open("gemini_evaluation_results.jsonl", "a", encoding="utf-8") as f:
         for user_profile in user_profiles[-432:]:
             user_id = user_profile.get("id")
-            user_name=str(user_id)
+            user_name = user_id
             department = user_profile.get("department", "wrong department")
             age = str(user_profile.get("age", "wrong age"))
             print(f"Evaluating for user: {user_id}")
             # to avoid exceeding API quota
-            if user_id % 2:
-                time.sleep(60)
+            time.sleep(5)
 
             for round in range(3):
                 # 1. Create or load user
-                user_instance_original = User(name=user_name)
-                user_instance_baseline = BaseUser(name=user_name)
+                user_instance_original = User.load(name=user_name) if User.exists(user_name) else User(name=user_name, age=age, department=department)
+                user_instance_baseline = BaseUser.load(name=user_name) if BaseUser.exists(user_name) else BaseUser(name=user_name, age=age, department=department)
 
-                # new user that has never registered
-                if user_instance_original.department is None:
-                    user_instance_original.__init__(name=user_name, age=age, department=department) 
-                if user_instance_baseline.department is None:
-                    user_instance_baseline.__init__(name=user_name, age=age, department=department)
-                
                 # Evaluate both models
                 our_model_result = evaluate_model(user_profile, user_instance_original)
                 baseline_result = evaluate_model(user_profile, user_instance_baseline)

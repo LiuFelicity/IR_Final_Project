@@ -341,6 +341,10 @@ class User:
         vector (np.ndarray): The vector representing the user.
     """
     def __init__(self, name, vector_dim=100, department=None, age=None):
+        if User.exists(name):
+            self = User.load(name)
+            return
+        
         user_file = os.path.join(os.path.dirname(__file__), 'baseline_user_vectors.pkl')
         test = 0
         try:
@@ -379,6 +383,16 @@ class User:
             self.vector = user_vectors[name].vector
             self.department = user_vectors[name].department
             self.age = user_vectors[name].age
+        
+    @staticmethod
+    def exists(name):
+        user_vectors, _, _, _, _ = load_vectors()
+        return name in user_vectors
+    
+    def load(name):
+        if not User.exists(name): return None
+        user_vectors, _, _, _, _ = load_vectors()
+        return user_vectors[name]
     
     def recommend(self, user_name, user_file=os.path.join(os.path.dirname(__file__),'baseline_user_vectors.pkl'), item_file=os.path.join(os.path.dirname(__file__),'baseline_item_vectors.pkl'), top_k=5):
         """
