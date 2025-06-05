@@ -581,7 +581,7 @@ if __name__ == '__main__':
     # 訓練
     BPR_gradient(
         rate=0.01,
-        iterations=250,
+        iterations=300,
         train_num=4000,
         lam=0.009,
         user_scores=user_scores,
