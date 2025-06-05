@@ -579,7 +579,7 @@ if __name__ == '__main__':
     # 訓練
     BPR_gradient(
         rate=0.01,
-        iterations=100,
+        iterations=300,
         train_num=4000,
         lam=0.009,
         user_scores=user_scores,
@@ -587,10 +587,10 @@ if __name__ == '__main__':
         users=users,
         item_vector=item_vector_original,
         item_vector_original=item_vector_original,
-        lambda_tfidf=0.001,  # 只針對 item_cold_start 模型
+        lambda_tfidf = 0.001,  # 只針對 item_cold_start 模型
         M = M,
         b = b,
-        lambda_user = 0.1
+        lambda_user = 7
     )
     end_time = time.time()
     print(f"Execution time: {end_time - start_time:.2f} sec")

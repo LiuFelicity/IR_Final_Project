@@ -5,7 +5,7 @@ from scipy.stats import kendalltau, rankdata
 import numpy as np
 # 加入上層目錄到 sys.path
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
-from method2.baseline import User, load_user_scores
+from method2.cold_start_model import User, load_user_scores
 
 # Paths
 USER_SCORE_PATH = os.path.join(os.path.dirname(__file__), "../grep/train_data/user_scores.jsonl")

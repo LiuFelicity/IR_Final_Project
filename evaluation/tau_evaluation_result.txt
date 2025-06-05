@@ -1,2 +1,349 @@
-orginal: 0.2311 over 999 users
-baseline: 0.2137 over 999 users
+baseline: 
+100 iteratioins: 0.2137 over 999 users
+250 iteratioins: 0.2472 over 999 users
+
+lambda_user:
+BPR_gradient(
+    rate=0.01,
+    iterations=100,
+    train_num=4000,
+    lam=0.009,
+    user_scores=user_scores,
+    file_to_vector=file_to_vector,
+    users=users,
+    item_vector=item_vector_original,
+    item_vector_original=item_vector_original,
+    lambda_tfidf = 0.001,  # 只針對 item_cold_start 模型
+    M = M,
+    b = b,
+    lambda_user = 0.1
+)
+cold_start_model: 0.2311 over 999 users
+
+BPR_gradient(
+    rate=0.01,
+    iterations=100,
+    train_num=4000,
+    lam=0.009,
+    user_scores=user_scores,
+    file_to_vector=file_to_vector,
+    users=users,
+    item_vector=item_vector_original,
+    item_vector_original=item_vector_original,
+    lambda_tfidf = 0.001,  # 只針對 item_cold_start 模型
+    M = M,
+    b = b,
+    lambda_user = 0.05
+)
+cold_start_model: 0.2284 over 999 users
+
+BPR_gradient(
+    rate=0.01,
+    iterations=100,
+    train_num=4000,
+    lam=0.009,
+    user_scores=user_scores,
+    file_to_vector=file_to_vector,
+    users=users,
+    item_vector=item_vector_original,
+    item_vector_original=item_vector_original,
+    lambda_tfidf = 0.001,  # 只針對 item_cold_start 模型
+    M = M,
+    b = b,
+    lambda_user = 0.2
+)
+cold_start_model: 0.2423 over 999 users
+
+BPR_gradient(
+    rate=0.01,
+    iterations=100,
+    train_num=4000,
+    lam=0.009,
+    user_scores=user_scores,
+    file_to_vector=file_to_vector,
+    users=users,
+    item_vector=item_vector_original,
+    item_vector_original=item_vector_original,
+    lambda_tfidf = 0.001,  # 只針對 item_cold_start 模型
+    M = M,
+    b = b,
+    lambda_user = 0.5
+)
+cold_start_model: 0.2604 over 999 users
+
+BPR_gradient(
+    rate=0.01,
+    iterations=100,
+    train_num=4000,
+    lam=0.009,
+    user_scores=user_scores,
+    file_to_vector=file_to_vector,
+    users=users,
+    item_vector=item_vector_original,
+    item_vector_original=item_vector_original,
+    lambda_tfidf = 0.001,  # 只針對 item_cold_start 模型
+    M = M,
+    b = b,
+    lambda_user = 1
+)
+cold_start_model: 0.2706 over 999 users
+
+BPR_gradient(
+    rate=0.01,
+    iterations=100,
+    train_num=4000,
+    lam=0.009,
+    user_scores=user_scores,
+    file_to_vector=file_to_vector,
+    users=users,
+    item_vector=item_vector_original,
+    item_vector_original=item_vector_original,
+    lambda_tfidf = 0.001,  # 只針對 item_cold_start 模型
+    M = M,
+    b = b,
+    lambda_user = 2
+)
+cold_start_model: 0.2751 over 999 users
+
+BPR_gradient(
+    rate=0.01,
+    iterations=100,
+    train_num=4000,
+    lam=0.009,
+    user_scores=user_scores,
+    file_to_vector=file_to_vector,
+    users=users,
+    item_vector=item_vector_original,
+    item_vector_original=item_vector_original,
+    lambda_tfidf = 0.001,  # 只針對 item_cold_start 模型
+    M = M,
+    b = b,
+    lambda_user = 5
+)
+cold_start_model: 0.2825 over 999 users
+
+BPR_gradient(
+    rate=0.01,
+    iterations=100,
+    train_num=4000,
+    lam=0.009,
+    user_scores=user_scores,
+    file_to_vector=file_to_vector,
+    users=users,
+    item_vector=item_vector_original,
+    item_vector_original=item_vector_original,
+    lambda_tfidf = 0.001,  # 只針對 item_cold_start 模型
+    M = M,
+    b = b,
+    lambda_user = 6
+)
+cold_start_model: 0.2853 over 999 users
+
+BPR_gradient(
+    rate=0.01,
+    iterations=100,
+    train_num=4000,
+    lam=0.009,
+    user_scores=user_scores,
+    file_to_vector=file_to_vector,
+    users=users,
+    item_vector=item_vector_original,
+    item_vector_original=item_vector_original,
+    lambda_tfidf = 0.001,  # 只針對 item_cold_start 模型
+    M = M,
+    b = b,
+    lambda_user = 6.5
+)
+cold_start_model: 0.2857 over 999 users
+
+BPR_gradient(
+    rate=0.01,
+    iterations=100,
+    train_num=4000,
+    lam=0.009,
+    user_scores=user_scores,
+    file_to_vector=file_to_vector,
+    users=users,
+    item_vector=item_vector_original,
+    item_vector_original=item_vector_original,
+    lambda_tfidf = 0.001,  # 只針對 item_cold_start 模型
+    M = M,
+    b = b,
+    lambda_user = 7
+)
+cold_start_model: 0.2862 over 999 users
+
+BPR_gradient(
+    rate=0.01,
+    iterations=100,
+    train_num=4000,
+    lam=0.009,
+    user_scores=user_scores,
+    file_to_vector=file_to_vector,
+    users=users,
+    item_vector=item_vector_original,
+    item_vector_original=item_vector_original,
+    lambda_tfidf = 0.001,  # 只針對 item_cold_start 模型
+    M = M,
+    b = b,
+    lambda_user = 8
+)
+cold_start_model: 0.2826 over 999 users
+
+BPR_gradient(
+    rate=0.01,
+    iterations=100,
+    train_num=4000,
+    lam=0.009,
+    user_scores=user_scores,
+    file_to_vector=file_to_vector,
+    users=users,
+    item_vector=item_vector_original,
+    item_vector_original=item_vector_original,
+    lambda_tfidf = 0.001,  # 只針對 item_cold_start 模型
+    M = M,
+    b = b,
+    lambda_user = 10
+)
+cold_start_model: 0.2791 over 999 users
+
+
+lambda_tfidf:
+
+BPR_gradient(
+    rate=0.01,
+    iterations=100,
+    train_num=4000,
+    lam=0.009,
+    user_scores=user_scores,
+    file_to_vector=file_to_vector,
+    users=users,
+    item_vector=item_vector_original,
+    item_vector_original=item_vector_original,
+    lambda_tfidf = 0.01,  # 只針對 item_cold_start 模型
+    M = M,
+    b = b,
+    lambda_user = 7
+)
+cold_start_model: 0.2754 over 999 users
+
+BPR_gradient(
+    rate=0.01,
+    iterations=100,
+    train_num=4000,
+    lam=0.009,
+    user_scores=user_scores,
+    file_to_vector=file_to_vector,
+    users=users,
+    item_vector=item_vector_original,
+    item_vector_original=item_vector_original,
+    lambda_tfidf = 0.0001,  # 只針對 item_cold_start 模型
+    M = M,
+    b = b,
+    lambda_user = 7
+)
+cold_start_model: 0.2773 over 999 users
+
+
+iterations:
+BPR_gradient(
+    rate=0.01,
+    iterations=100,
+    train_num=4000,
+    lam=0.009,
+    user_scores=user_scores,
+    file_to_vector=file_to_vector,
+    users=users,
+    item_vector=item_vector_original,
+    item_vector_original=item_vector_original,
+    lambda_tfidf = 0.001,  # 只針對 item_cold_start 模型
+    M = M,
+    b = b,
+    lambda_user = 7
+)
+cold_start_model: 0.2862 over 999 users
+
+BPR_gradient(
+    rate=0.01,
+    iterations=200,
+    train_num=4000,
+    lam=0.009,
+    user_scores=user_scores,
+    file_to_vector=file_to_vector,
+    users=users,
+    item_vector=item_vector_original,
+    item_vector_original=item_vector_original,
+    lambda_tfidf = 0.001,  # 只針對 item_cold_start 模型
+    M = M,
+    b = b,
+    lambda_user = 7
+)
+cold_start_model: 0.2912 over 999 users
+
+BPR_gradient(
+    rate=0.01,
+    iterations=250,
+    train_num=4000,
+    lam=0.009,
+    user_scores=user_scores,
+    file_to_vector=file_to_vector,
+    users=users,
+    item_vector=item_vector_original,
+    item_vector_original=item_vector_original,
+    lambda_tfidf = 0.001,  # 只針對 item_cold_start 模型
+    M = M,
+    b = b,
+    lambda_user = 7
+)
+cold_start_model: 0.2916 over 999 users
+
+BPR_gradient(
+    rate=0.01,
+    iterations=300,
+    train_num=4000,
+    lam=0.009,
+    user_scores=user_scores,
+    file_to_vector=file_to_vector,
+    users=users,
+    item_vector=item_vector_original,
+    item_vector_original=item_vector_original,
+    lambda_tfidf = 0.001,  # 只針對 item_cold_start 模型
+    M = M,
+    b = b,
+    lambda_user = 7
+)
+cold_start_model: 0.2920 over 999 users
+
+BPR_gradient(
+    rate=0.01,
+    iterations=350,
+    train_num=4000,
+    lam=0.009,
+    user_scores=user_scores,
+    file_to_vector=file_to_vector,
+    users=users,
+    item_vector=item_vector_original,
+    item_vector_original=item_vector_original,
+    lambda_tfidf = 0.001,  # 只針對 item_cold_start 模型
+    M = M,
+    b = b,
+    lambda_user = 7
+)
+cold_start_model: 0.2893 over 999 users
+
+BPR_gradient(
+    rate=0.01,
+    iterations=400,
+    train_num=4000,
+    lam=0.009,
+    user_scores=user_scores,
+    file_to_vector=file_to_vector,
+    users=users,
+    item_vector=item_vector_original,
+    item_vector_original=item_vector_original,
+    lambda_tfidf = 0.001,  # 只針對 item_cold_start 模型
+    M = M,
+    b = b,
+    lambda_user = 7
+)
+cold_start_model: 0.2896 over 999 users
