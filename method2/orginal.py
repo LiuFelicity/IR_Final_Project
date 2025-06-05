@@ -544,6 +544,23 @@ class User:
         user_vectors[user_name].vector = user_vec
         with open(user_file, 'wb') as f:
             pickle.dump(user_vectors, f)
+    
+    def getscore(self, item, user_file=os.path.join(os.path.dirname(__file__),'baseline_user_vectors.pkl'), item_file=os.path.join(os.path.dirname(__file__),'baseline_item_vectors.pkl')):
+        user_file = os.path.join(os.path.dirname(__file__), user_file)
+        item_file = os.path.join(os.path.dirname(__file__), item_file)
+
+        user_name = self.name
+        user_vectors, item_vector, file_to_vector, M, b = load_vectors(user_file, item_file)
+        if user_name not in user_vectors:
+            print(f"User {user_name} not found.")
+            return None
+        user_vec = user_vectors[user_name].vector
+
+        if item.lower() not in file_to_vector:
+            print(f"Item {item} not found.")
+            return None
+        item_idx = file_to_vector[item.lower()]
+        return np.dot(item_vector[item_idx], user_vec)
 
 
 if __name__ == '__main__':
