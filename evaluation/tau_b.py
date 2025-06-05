@@ -3,6 +3,7 @@ import json
 import sys
 from scipy.stats import kendalltau, rankdata
 import numpy as np
+
 # 加入上層目錄到 sys.path
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from method2.cold_start_model import User, load_user_scores
@@ -19,6 +20,8 @@ with open(USER_PROFILE_PATH, "r", encoding="utf-8") as f:
 user_scores = load_user_scores(USER_SCORE_PATH)
 
 taus = []
+significant_count = 0
+
 for user_id, item_score_list in user_scores.items():
     if int(user_id) <= 4000:
         continue
@@ -39,20 +42,26 @@ for user_id, item_score_list in user_scores.items():
     # 過濾掉 None 或 nan
     if any(s is None or (isinstance(s, float) and np.isnan(s)) for s in pred_scores):
         continue
-    # 全部分數一樣也跳過
+    # 全部分數一樣也跳過（無法比較排名）
     if len(set(gt_scores)) == 1 or len(set(pred_scores)) == 1:
         continue
 
-    # 使用 rankdata 正確處理同分，分數越高排名越前，所以加負號
+    # 使用 rankdata 處理同分，分數高者排名前（加負號）
     gt_rank = rankdata([-s for s in gt_scores], method="average")
     pred_rank = rankdata([-s for s in pred_scores], method="average")
 
-    tau, _ = kendalltau(gt_rank, pred_rank)
+    tau, p_value = kendalltau(gt_rank, pred_rank)
     if tau is not None and not np.isnan(tau):
+        print(f"  -> Kendall's tau = {tau:.4f}, p = {p_value:.4g}")
         taus.append(tau)
+        if p_value < 0.05:
+            significant_count += 1
 
-# 平均 tau
+# 統計與輸出
 if taus:
-    print(f"Average Kendall's tau: {sum(taus)/len(taus):.4f} over {len(taus)} users")
+    avg_tau = sum(taus) / len(taus)
+    sig_ratio = significant_count / len(taus)
+    print(f"\n✅ Average Kendall's tau: {avg_tau:.4f} over {len(taus)} users")
+    print(f"🔍 Significant (p < 0.05): {significant_count}/{len(taus)} users ({sig_ratio:.2%})")
 else:
     print("No valid users to evaluate.")
