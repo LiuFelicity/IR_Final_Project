@@ -1,9 +1,7 @@
 import os
 import json
-import sys
 from scipy.stats import kendalltau
-sys.path.append(os.path.dirname(os.path.dirname(__file__)))
-from method2.baseline import User, load_user_scores
+from method2.orginal import User, load_user_scores
 
 # Paths
 USER_SCORE_PATH = os.path.join(os.path.dirname(__file__), "../grep/train_data/user_scores.jsonl")
@@ -18,17 +16,15 @@ user_scores = load_user_scores(USER_SCORE_PATH)
 
 taus = []
 for user_id, item_score_list in user_scores.items():
-    if int(user_id) <= 4000:
-        continue
     if len(item_score_list) < 2:
         continue  # Need at least 2 items for tau
 
     profile = user_profiles.get(str(user_id), {})
     department = profile.get("department")
     age = profile.get("age")
-    print(f"Evaluating user {user_id} with department {department} and age {age}")
-    # user = User(name=user_id, department=department, age=age)
-    user = User.load(name=user_id) if User.exists(user_id) else User(name=user_id, age=age, department=department)
+
+    user = User(name=user_id, department=department, age=age)
+
     items = [item for item, _ in item_score_list]
     gt_scores = [score for _, score in item_score_list]
     pred_scores = [user.getscore(item) for item in items]

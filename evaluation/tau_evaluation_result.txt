@@ -1,2 +1,0 @@
-orginal: 0.0210 over 1000 users
-baseline: 0.0219 over 1000 users

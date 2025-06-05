@@ -553,14 +553,11 @@ class User:
         item_file = os.path.join(os.path.dirname(__file__), item_file)
 
         user_name = self.name
-        try:
-            user_vectors, item_vector, file_to_vector, M, b = load_vectors(user_file, item_file)
-            if user_name in user_vectors:
-                user_vec = user_vectors[user_name].vector
-            else:
-                user_vec = self.vector  # fallback to self.vector if not found in pickle
-        except Exception:
-            user_vec = self.vector  # fallback if pickle error
+        user_vectors, item_vector, file_to_vector, M, b = load_vectors(user_file, item_file)
+        if user_name not in user_vectors:
+            print(f"User {user_name} not found.")
+            return None
+        user_vec = user_vectors[user_name].vector
 
         if item.lower() not in file_to_vector:
             print(f"Item {item} not found.")
