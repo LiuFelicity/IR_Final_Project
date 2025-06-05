@@ -111,12 +111,6 @@ def main():
 
                 # Write one user result per line
                 f.write(json.dumps(result, ensure_ascii=False) + "\n")
-                
-                # re-train the model based on the feedback (active learning)
-                cleaned_ratings = our_model_result
-                user_instance_original.update_user_scores(cleaned_ratings)
-                cleaned_ratings = baseline_result
-                user_instance_baseline.update_user_scores(cleaned_ratings)
 
 
 if __name__ == "__main__":
