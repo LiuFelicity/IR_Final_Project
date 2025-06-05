@@ -186,4 +186,4 @@ cython_debug/
 grep/**/*.html
 activity_data_text/
 
-CLCRec/runs
+CLCRec/runs*.pkl
