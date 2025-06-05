@@ -1,7 +1,6 @@
 import os
 import argparse
 import math
-import xml.etree.ElementTree as ET
 from collections import defaultdict
 import time
 import random
