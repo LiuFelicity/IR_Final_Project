@@ -34,7 +34,7 @@ IR_Final_Project/
 │   ├── baseline.py
 │   └── *.pkl                       # Trained model file
 └── evaluation/                     
-    └── *.py                            # Scripts to evaluate the models
+    └── *.py                        # Scripts to evaluate the models
 ```
 
 ## Usage
