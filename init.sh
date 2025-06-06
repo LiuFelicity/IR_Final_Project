@@ -1,3 +1,9 @@
+find . -name "*.npz" -delete
+find . -name "*.pkl" -delete
+rm -rf grep/page_data
+rm -rf grep/activity_data
+rm -rf grep/activity_data_text
+
 pip freeze | xargs pip uninstall -y
 pip install -r requirements.txt
 
