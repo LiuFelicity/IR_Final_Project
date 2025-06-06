@@ -2,5 +2,4 @@ bs4
 dotenv
 flask
 google-generativeai
-python-dotenv
 scikit-learn
