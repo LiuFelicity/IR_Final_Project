@@ -1,6 +1,8 @@
 # IR_Final_Project
 
-This project is a web scraping and content extraction pipeline for collecting and processing opportunity listings from [opportunitiescircle.com](https://www.opportunitiescircle.com/). It also includes a recommendation system based on Latent Semantic Indexing (LSI) and user ratings, accessible via both a command-line interface (CLI) and a graphical user interface (GUI).
+This project is a comprehensive web scraping and content extraction pipeline designed to collect and process opportunity listings from [opportunitiescircle.com](https://www.opportunitiescircle.com/). It features a recommendation system based on Latent Semantic Indexing (LSI) and user ratings, which is accessible through both a command-line interface (CLI) and a graphical user interface (GUI).
+
+The pipeline automates the process of fetching, extracting, and analyzing data, making it easier to discover and recommend opportunities tailored to user preferences. The GUI allows users to interact with the system by creating profiles, receiving recommendations, and providing feedback through ratings. These ratings are then used to improve the recommendation model.
 
 ## Directory Structure
 
