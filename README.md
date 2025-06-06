@@ -11,7 +11,7 @@ IR_Final_Project/
 ├── requirements.txt                # Python dependencies
 ├── README.md                       # This readme file
 ├── init.sh                         # Fetch data and train model
-├── evaluation.sh                   # Evaluation Model
+├── evaluation.sh                   # Evaluate Model
 ├── launch_app.sh                   # Run the app
 ├── grep/
 │   ├── page.py                     # Scrapes paginated listing pages and saves HTML
