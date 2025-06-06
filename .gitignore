@@ -188,3 +188,4 @@ grep/**/*.txt
 
 CLCRec/runs
 *.pkl
+*.npz
