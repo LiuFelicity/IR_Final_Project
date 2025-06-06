@@ -84,14 +84,12 @@ def main():
 
     # Open the output file in append mode
     with open("gemini_evaluation_results.jsonl", "a", encoding="utf-8") as f:
-        for user_profile in user_profiles[-432:]:
+        for user_profile in user_profiles[-80:]:
             user_id = user_profile.get("id")
             user_name = user_id
             department = user_profile.get("department", "wrong department")
             age = str(user_profile.get("age", "wrong age"))
             print(f"Evaluating for user: {user_id}")
-            # to avoid exceeding API quota
-            time.sleep(5)
 
             for round in range(3):
                 # 1. Create or load user
@@ -111,6 +109,9 @@ def main():
 
                 # Write one user result per line
                 f.write(json.dumps(result, ensure_ascii=False) + "\n")
+                
+            # to avoid exceeding API quota
+            time.sleep(60)
 
 
 if __name__ == "__main__":
