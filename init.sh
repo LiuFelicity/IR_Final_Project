@@ -14,6 +14,5 @@ cd grep
 python content.py
 
 cd ..
-find . -name "*.pkl" -delete
 python method2/cold_start_model.py
 python method2/baseline.py
