@@ -34,9 +34,15 @@ IR_Final_Project/
 │       ├── profile.html       # User profile creation page
 │       ├── recommendations.html # Activity rating page
 │       └── thank_you.html     # Thank you page
-|── method2/
-│   ├── assignment.py          # same as the assignment2, just cache
-│   ├── orginal.py             # you can run it to do bpr
+|── method2/                   # Runing the training of BPR
+│   ├── cold_start_model.py    
+│   ├── baseline.py   
+|── evaluation/                # Evaluation of our model
+│   ├── abtest.py
+│   ├── evaluation.py
+│   ├── gemini_evaluation_results
+│   ├── pseudo_rating.py
+│   ├── tau_b.py
 └── CLCRec/
     ├── ...                    # Sub-project for Contrastive Learning for Cold-start Recommendation
 ```
@@ -131,14 +137,14 @@ The GUI allows new users to:
 User profiles and their ratings are stored in `gui/users.json`.
 
 ## method2
-In this part, we want to use bpr, make sure you already do fetch_missing_activities.py and content.py.
-- If you want to run **original** BPR
+In this part, we want to use bpr, make sure you already do fetch_missing_activities.py and content.py. And make sure no any .plk file in method2/.
+- If you want to train our model
 ```bash
-python orginal.py -m original
+python method2/cold_start_model.py
 ```
-- If you want to run **item cold start** BPR
+- If you want to train baseline model
 ```bash
-python orginal.py -m item_cold_start
+python method2/baseline.py
 ```
 
 ## Notes
@@ -146,36 +152,3 @@ python orginal.py -m item_cold_start
 -   The GUI is built using Flask.
 -   The pipeline is modular; you can run each step independently, assuming the required input files from previous steps exist.
 -   The output folders (`grep/page_data/`, `grep/activity_data/`, `grep/activity_data_text/`) will be created automatically if they do not exist when running the `grep/` scripts.
-
-## License
-This project is for educational and research purposes only.
-
-## CLCRec Sub-project
-The `CLCRec/` directory contains a separate project implementing "Contrastive Learning for Cold-start Recommendation". Please refer to `CLCRec/README.md` for details on that specific project.
-
-@inproceedings{CLCRec,
-  title     = {Contrastive Learning for Cold-start Recommendation},
-  author    = {Wei, Yinwei and
-               Wang, Xiang and
-               Qi, Li and
-               Nie, Liqiang and
-               Li, Yan and
-               Li, Xuanqing and
-               Chua, Tat-Seng},
-  booktitle = {Proceedings of the 29th ACM International Conference on Multimedia},
-  pages     = {--},
-  year      = {2021}
-}
-
-## TaNP Sub-project
-# TaNP
-The `TaNP-main/` directory contains a separate project implementing "Task-adaptive Neural Process for User Cold-Start Recommendation". Please refer to `TaNP-main/README.md` for details on that specific project.
-
-```
-@inproceedings{lincsr2021,
-  title={Task-adaptive Neural Process for User Cold-Start Recommendation},
-  author={Lin, Xixun and Wu, Jia and Zhou, Chuan and Pan, Shirui and Cao, Yanan and Wang, Bin},
-  booktitle={ACM International World Wide Web Conferences (WWW)},
-  year={2021}
-}
-```
