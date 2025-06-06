@@ -9,6 +9,7 @@ IR_Final_Project/
 ├── requirements.txt           # Python dependencies
 ├── README.md                  # This readme file
 ├── init.sh                    # Initialization script (if any)
+├── evaluation.sh              # Evaluation Model
 ├── grep/
 │   ├── page.py                # Scrapes paginated listing pages and saves HTML
 │   ├── activity.py            # Extracts opportunity links from listing HTML files
@@ -43,74 +44,18 @@ IR_Final_Project/
 │   ├── gemini_evaluation_results
 │   ├── pseudo_rating.py
 │   ├── tau_b.py
-└── CLCRec/
-    ├── ...                    # Sub-project for Contrastive Learning for Cold-start Recommendation
 ```
 
 ## Usage
-
-1.  **Install dependencies**
-    ```bash
-    pip install torch==2.7.0 # Or a compatible version
-    pip install torch_scatter==2.1.2 -f https://data.pyg.org/whl/torch-2.7.0+cu128.html # Adjust for your PyTorch and CUDA version
-    pip install -r requirements.txt
-    ```
-
-2.  **Step 1: Download listing pages**
-    -   Run `grep/page.py` to download paginated opportunity listings (pages 1–25) into `grep/page_data/`.
-    ```bash
-    python grep/page.py
-    ```
-
-3.  **Step 2: Extract opportunity links**
-    -   Run `grep/activity.py` to parse each listing page and collect unique opportunity links into `grep/activity_data/opportunity_links.txt`.
-    ```bash
-    python grep/activity.py
-    ```
-
-4.  **Step 3: Download opportunity detail pages**
-    -   Run `grep/activity_html.py` to download each opportunity's detail HTML into `grep/activity_data/`.
-    ```bash
-    python grep/activity_html.py
-    ```
-    - If you want all data of train miss
-    ```bash
-    python grep/fetch_missing_activities.py
-    ```
-
-5.  **Step 4: Extract main content**
-    -   Run `grep/content.py` to extract and save the main text content from each HTML file into `grep/activity_data_text/`.
-    ```bash
-    python grep/content.py
-    ```
-
-6.  **Step 5: Generate LSI vectors**
-    -   Run `grep/build_lsi.py` to build the term-document matrix, apply Latent Semantic Indexing (LSI), and generate term data (`grep/term_data_lsi.npz`) and document data (`grep/doc_data_lsi.npz`).
-    ```bash
-    python grep/build_lsi.py
-    ```
-
-7.  **Step 6: Generate Department Recommendations (Baseline)**
-    -   Run `grep/baseline_recommender.py` to generate LSI vectors for departments based on `grep/department.txt`, `grep/term_data_lsi.npz`, and `grep/doc_data_lsi.npz`.
-    -   The department LSI vectors are saved to `grep/departments_lsi.npy`.
-    ```bash
-    python grep/baseline_recommender.py
-    ```
-
-8.  **Step 7: Find similar documents (CLI)**
-    -   To find the top 5 most relevant documents to a given file using the CLI, use the interactive script:
-    ```bash
-    python grep/find_similar_docs.py
-    ```
-    Enter a filename from `grep/activity_data_text` (e.g. `commonwealth-distance-learning-scholarships.txt`) when prompted, and the script will output the five most similar documents based on LSI embeddings.
-
-9.  **Step 8: User-based Ratings and Recommendations (CLI - Experimental)**
-    -   Run `grep/user_rating.py` to allow a user to rate a sample of 10 activities via the command line.
-    -   This script will then initialize a user vector based on these ratings and save user data (name, ratings, vector) to `grep/users.json`.
-    -   Note: The script currently indicates it does not serve returning users. For a more interactive experience, use the GUI (Step 9).
-    ```bash
-    python grep/user_rating.py
-    ```
+1. You need a python environment
+2. Run following command to grep data and train model.
+```bash
+./init.sh
+```
+3. You can use following command to evaluation the model.
+```bash
+./evaluation.sh
+```
 
 ## Running the Web-based GUI Recommender
 
