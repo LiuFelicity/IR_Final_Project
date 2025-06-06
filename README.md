@@ -9,6 +9,7 @@ IR_Final_Project/
 ├── requirements.txt           # Python dependencies
 ├── README.md                  # This readme file
 ├── init.sh                    # Initialization script (if any)
+├── evaluation.sh              # Evaluation Model
 ├── grep/
 │   ├── page.py                # Scrapes paginated listing pages and saves HTML
 │   ├── activity.py            # Extracts opportunity links from listing HTML files
@@ -34,77 +35,27 @@ IR_Final_Project/
 │       ├── profile.html       # User profile creation page
 │       ├── recommendations.html # Activity rating page
 │       └── thank_you.html     # Thank you page
-|── method2/
-│   ├── assignment.py          # same as the assignment2, just cache
-│   ├── orginal.py             # you can run it to do bpr
-└── CLCRec/
-    ├── ...                    # Sub-project for Contrastive Learning for Cold-start Recommendation
+|── method2/                   # Runing the training of BPR
+│   ├── cold_start_model.py    
+│   ├── baseline.py   
+|── evaluation/                # Evaluation of our model
+│   ├── abtest.py
+│   ├── evaluation.py
+│   ├── gemini_evaluation_results
+│   ├── pseudo_rating.py
+│   ├── tau_b.py
 ```
 
 ## Usage
-
-1.  **Install dependencies**
-    ```bash
-    pip install torch==2.7.0 # Or a compatible version
-    pip install torch_scatter==2.1.2 -f https://data.pyg.org/whl/torch-2.7.0+cu128.html # Adjust for your PyTorch and CUDA version
-    pip install -r requirements.txt
-    ```
-
-2.  **Step 1: Download listing pages**
-    -   Run `grep/page.py` to download paginated opportunity listings (pages 1–25) into `grep/page_data/`.
-    ```bash
-    python grep/page.py
-    ```
-
-3.  **Step 2: Extract opportunity links**
-    -   Run `grep/activity.py` to parse each listing page and collect unique opportunity links into `grep/activity_data/opportunity_links.txt`.
-    ```bash
-    python grep/activity.py
-    ```
-
-4.  **Step 3: Download opportunity detail pages**
-    -   Run `grep/activity_html.py` to download each opportunity's detail HTML into `grep/activity_data/`.
-    ```bash
-    python grep/activity_html.py
-    ```
-    - If you want all data of train miss
-    ```bash
-    python grep/fetch_missing_activities.py
-    ```
-
-5.  **Step 4: Extract main content**
-    -   Run `grep/content.py` to extract and save the main text content from each HTML file into `grep/activity_data_text/`.
-    ```bash
-    python grep/content.py
-    ```
-
-6.  **Step 5: Generate LSI vectors**
-    -   Run `grep/build_lsi.py` to build the term-document matrix, apply Latent Semantic Indexing (LSI), and generate term data (`grep/term_data_lsi.npz`) and document data (`grep/doc_data_lsi.npz`).
-    ```bash
-    python grep/build_lsi.py
-    ```
-
-7.  **Step 6: Generate Department Recommendations (Baseline)**
-    -   Run `grep/baseline_recommender.py` to generate LSI vectors for departments based on `grep/department.txt`, `grep/term_data_lsi.npz`, and `grep/doc_data_lsi.npz`.
-    -   The department LSI vectors are saved to `grep/departments_lsi.npy`.
-    ```bash
-    python grep/baseline_recommender.py
-    ```
-
-8.  **Step 7: Find similar documents (CLI)**
-    -   To find the top 5 most relevant documents to a given file using the CLI, use the interactive script:
-    ```bash
-    python grep/find_similar_docs.py
-    ```
-    Enter a filename from `grep/activity_data_text` (e.g. `commonwealth-distance-learning-scholarships.txt`) when prompted, and the script will output the five most similar documents based on LSI embeddings.
-
-9.  **Step 8: User-based Ratings and Recommendations (CLI - Experimental)**
-    -   Run `grep/user_rating.py` to allow a user to rate a sample of 10 activities via the command line.
-    -   This script will then initialize a user vector based on these ratings and save user data (name, ratings, vector) to `grep/users.json`.
-    -   Note: The script currently indicates it does not serve returning users. For a more interactive experience, use the GUI (Step 9).
-    ```bash
-    python grep/user_rating.py
-    ```
+1. You need a python environment
+2. Run following command to grep data and train model.
+```bash
+./init.sh
+```
+3. You can use following command to evaluation the model.
+```bash
+./evaluation.sh
+```
 
 ## Running the Web-based GUI Recommender
 
@@ -131,14 +82,14 @@ The GUI allows new users to:
 User profiles and their ratings are stored in `gui/users.json`.
 
 ## method2
-In this part, we want to use bpr, make sure you already do fetch_missing_activities.py and content.py.
-- If you want to run **original** BPR
+In this part, we want to use bpr, make sure you already do fetch_missing_activities.py and content.py. And make sure no any .plk file in method2/.
+- If you want to train our model
 ```bash
-python orginal.py -m original
+python method2/cold_start_model.py
 ```
-- If you want to run **item cold start** BPR
+- If you want to train baseline model
 ```bash
-python orginal.py -m item_cold_start
+python method2/baseline.py
 ```
 
 ## Notes
@@ -146,36 +97,3 @@ python orginal.py -m item_cold_start
 -   The GUI is built using Flask.
 -   The pipeline is modular; you can run each step independently, assuming the required input files from previous steps exist.
 -   The output folders (`grep/page_data/`, `grep/activity_data/`, `grep/activity_data_text/`) will be created automatically if they do not exist when running the `grep/` scripts.
-
-## License
-This project is for educational and research purposes only.
-
-## CLCRec Sub-project
-The `CLCRec/` directory contains a separate project implementing "Contrastive Learning for Cold-start Recommendation". Please refer to `CLCRec/README.md` for details on that specific project.
-
-@inproceedings{CLCRec,
-  title     = {Contrastive Learning for Cold-start Recommendation},
-  author    = {Wei, Yinwei and
-               Wang, Xiang and
-               Qi, Li and
-               Nie, Liqiang and
-               Li, Yan and
-               Li, Xuanqing and
-               Chua, Tat-Seng},
-  booktitle = {Proceedings of the 29th ACM International Conference on Multimedia},
-  pages     = {--},
-  year      = {2021}
-}
-
-## TaNP Sub-project
-# TaNP
-The `TaNP-main/` directory contains a separate project implementing "Task-adaptive Neural Process for User Cold-Start Recommendation". Please refer to `TaNP-main/README.md` for details on that specific project.
-
-```
-@inproceedings{lincsr2021,
-  title={Task-adaptive Neural Process for User Cold-Start Recommendation},
-  author={Lin, Xixun and Wu, Jia and Zhou, Chuan and Pan, Shirui and Cao, Yanan and Wang, Bin},
-  booktitle={ACM International World Wide Web Conferences (WWW)},
-  year={2021}
-}
-```
